@@ -13,15 +13,24 @@
 @media (prefers-color-scheme: dark){:root{--bg:#17181a;--card:#222326;--ink:#ececee;--ink-2:#c3c4c8;--ink-3:#8d9096;--line:#34363a;--acc:#6b9ae6;--ok:#4cc38a;--bad:#ef7a66;--warn:#e0b44c;--seg:#2b2c30;--sh:none}}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
-main{max-width:1180px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 48px}
+main{max-width:760px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 14px 40px}
 header{display:flex;align-items:center;gap:10px;margin:4px 0 16px;flex-wrap:wrap}
 header h1{font-size:22px;margin:0;flex:1;letter-spacing:-.01em;min-width:180px}
 a{color:var(--acc)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px;box-shadow:var(--sh)}
 .card h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
 .card h2 .sp{flex:1}
-.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
-@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.pane{display:none}.pane.on{display:block}
+/* вкладки: на компьютере — сверху, на телефоне — панель внизу экрана */
+.tabs{display:flex;gap:4px;background:var(--seg);border-radius:12px;padding:4px;margin:0 0 14px;position:sticky;top:6px;z-index:5}
+.tabs button{flex:1;border:0;background:none;border-radius:9px;padding:9px 6px;font-size:15px;color:var(--ink-2);display:flex;align-items:center;justify-content:center;gap:6px}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);font-weight:650;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tabs .tb{font-size:11.5px;font-weight:650;color:var(--ink-3)}
+.tabs .tb:empty{display:none}
+.seg.full{display:flex;margin-bottom:4px}.seg.full button{flex:1}
+.btn.wide{width:100%;padding:11px}
+.au{display:inline-block;font-size:11.5px;font-weight:650;border-radius:6px;padding:1px 7px;color:#fff;background:var(--ink-3)}
+.au.oleg{background:#2D62B8}.au.nikol{background:#b0458f}
 input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-width:0}
 textarea{width:100%;resize:vertical;min-height:70px;line-height:1.45}
 input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--acc) 35%,transparent);border-color:var(--acc)}
@@ -42,7 +51,7 @@ button{font:inherit;cursor:pointer}
 @keyframes bl{50%{opacity:.3}}
 /* поездка */
 .trip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.3fr);gap:10px;align-items:end}
-@media (max-width:700px){.trip{grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.trip{grid-template-columns:1fr 1fr}.stat{gap:14px;margin-top:12px}.big{font-size:19px}.prog{flex-basis:100%}}
 .trip label>span{display:block;font-size:12.5px;font-weight:600;color:var(--ink-3);margin-bottom:4px}
 .trip input{width:100%}
 .stat{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;align-items:center}
@@ -69,7 +78,8 @@ button{font:inherit;cursor:pointer}
 .nocm .it .cm{display:none}
 .it .edw{flex:1;display:flex;flex-direction:column;gap:6px}
 .it .edw input{padding:5px 8px}.it .edw textarea{min-height:64px;font-size:14px}
-.add{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.add{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.add>input{width:100%}
 /* заметки */
 .note{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px}
 .note .tx{white-space:pre-wrap;word-break:break-word}
@@ -78,7 +88,7 @@ button{font:inherit;cursor:pointer}
 /* ИИ */
 .aist{font-size:13.5px;padding:9px 11px;border-radius:9px;background:var(--seg);margin-bottom:10px}
 .aist.warn{color:var(--warn)}
-.ans{border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-top:12px}
+.ans{border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-top:12px;background:var(--card)}
 .ans .q{font-weight:650;margin-bottom:2px}
 .ans .body{font-size:14.5px}
 .ans .body h4{margin:12px 0 4px;font-size:15px}
@@ -89,6 +99,26 @@ button{font:inherit;cursor:pointer}
 .empty{color:var(--ink-3);font-size:14px;margin:10px 0 0}
 #toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 15px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;max-width:90vw;z-index:9}
 #toast.on{opacity:1;transform:translateX(-50%)}
+@media (max-width:640px){
+  body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  main{padding:max(10px,env(safe-area-inset-top)) 10px 16px}
+  header{margin:2px 0 10px;gap:8px;flex-wrap:nowrap}
+  header h1{font-size:19px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{padding:9px 11px}.pill .t{display:none}
+  .ico-btn .lbl{display:none}
+  .tabs{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;border-radius:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+  .tabs button{flex-direction:column;gap:1px;padding:6px 4px;font-size:12px}
+  .tabs button[aria-selected="true"]{background:var(--seg);box-shadow:none;color:var(--acc)}
+  .tabs .ti{font-size:19px;line-height:1.1}
+  .tabs .tb{position:absolute;top:3px;left:50%;margin-left:13px;background:var(--seg);border-radius:8px;padding:0 5px;line-height:16px}
+  .tabs button{position:relative}
+  .card{padding:13px;border-radius:13px;margin-bottom:10px}
+  input,select,textarea{font-size:16px}  /* iOS не увеличивает страницу при вводе */
+  .it{padding:8px 4px}
+  .it input[type=checkbox]{width:22px;height:22px;margin-top:1px}
+  .ico{padding:7px 9px;font-size:15px}
+  #toast{bottom:calc(76px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -96,15 +126,22 @@ button{font:inherit;cursor:pointer}
 <header>
   <h1>✈️ Поездка в США</h1>
   <button type="button" class="pill" id="sync" title="Синхронизация с Google Диском"><span class="dot"></span><span class="t">Не подключено</span></button>
-  <button type="button" class="btn" id="setBtn" title="Общие настройки: ИИ и Google Диск">⚙ Настройки</button>
+  <button type="button" class="btn ico-btn" id="setBtn" title="Общие настройки: ИИ и Google Диск" aria-label="Настройки">⚙<span class="lbl"> Настройки</span></button>
 </header>
 
+<nav class="tabs" id="tabs" role="tablist">
+  <button type="button" role="tab" data-tab="list"><span class="ti">✓</span><span class="tl">Чек-лист</span><span class="tb" id="tbList"></span></button>
+  <button type="button" role="tab" data-tab="notes"><span class="ti">✎</span><span class="tl">Заметки</span><span class="tb" id="tbNotes"></span></button>
+  <button type="button" role="tab" data-tab="ai"><span class="ti">✦</span><span class="tl">ИИ</span></button>
+</nav>
+
+<div class="pane" data-pane="list">
 <section class="card">
   <div class="trip">
     <label><span>Вылет</span><input type="date" id="tFrom"></label>
     <label><span>Возвращение</span><input type="date" id="tTo"></label>
-    <label><span>Кто едет</span><input type="text" id="tWho" placeholder="напр. 2 взрослых"></label>
-    <label><span>Куда и зачем</span><input type="text" id="tDest" placeholder="напр. Нью-Йорк, Майами · туризм"></label>
+    <label><span>Кто едет</span><input type="text" id="tWho" placeholder="напр. Олег и Николь"></label>
+    <label><span>Куда и зачем</span><input type="text" id="tDest" placeholder="напр. Нью-Йорк · туризм"></label>
   </div>
   <div class="stat">
     <div><div class="big" id="sDays">—</div><div class="muted" id="sDaysL">до вылета</div></div>
@@ -113,36 +150,40 @@ button{font:inherit;cursor:pointer}
   </div>
 </section>
 
-<div class="grid">
-  <section class="card" id="listCard">
-    <h2>Чек-лист <button type="button" class="ico" data-a="cm" id="cmBtn"></button><span class="sp"></span>
-      <span class="seg" id="flt"><button type="button" data-f="all">Все</button><button type="button" data-f="left">Осталось</button><button type="button" data-f="done">Готово</button></span>
-    </h2>
-    <div id="list"></div>
-    <form class="add row" id="addForm" autocomplete="off">
-      <input type="text" class="grow" id="addText" placeholder="Новая задача…" maxlength="300">
-      <select id="addCat"></select>
-      <button class="btn pri" type="submit">Добавить</button>
-    </form>
-  </section>
+<section class="card" id="listCard">
+  <h2>Чек-лист <span class="sp"></span><button type="button" class="ico" data-a="cm" id="cmBtn"></button></h2>
+  <div class="seg full" id="flt"><button type="button" data-f="all">Все</button><button type="button" data-f="left">Осталось</button><button type="button" data-f="done">Готово</button></div>
+  <div id="list"></div>
+  <form class="add" id="addForm" autocomplete="off">
+    <input type="text" id="addText" placeholder="Новая задача…" maxlength="300">
+    <div class="row"><select id="addCat" class="grow"></select><button class="btn pri" type="submit">Добавить</button></div>
+  </form>
+</section>
+</div>
 
-  <div>
-    <section class="card">
-      <h2>Заметки</h2>
-      <textarea id="noteText" placeholder="Адреса, номера брони, телефоны, идеи, что не забыть… (Ctrl+Enter — сохранить)"></textarea>
-      <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn pri" type="button" id="noteAdd">Добавить заметку</button></div>
-      <div id="notes"></div>
-    </section>
+<div class="pane" data-pane="notes">
+<section class="card">
+  <h2>Новая заметка</h2>
+  <div class="row" style="margin-bottom:8px"><span class="muted">Пишет:</span><span class="seg" id="author"></span></div>
+  <textarea id="noteText" placeholder="Адреса, номера брони, телефоны, идеи, что не забыть…"></textarea>
+  <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn pri" type="button" id="noteAdd">Добавить заметку</button></div>
+</section>
+<section class="card">
+  <h2>Заметки <span class="sp"></span><span class="seg" id="nflt"></span></h2>
+  <div id="notes"></div>
+</section>
+</div>
 
-    <section class="card">
-      <h2>Анализ ИИ</h2>
-      <div class="aist" id="aiStatus"></div>
-      <div class="row"><button class="btn pri" type="button" id="aiRun">Разобрать подготовку</button><span class="muted">чек-лист, даты и заметки → что упущено и что делать дальше</span></div>
-      <textarea id="aiQ" style="margin-top:10px;min-height:56px" placeholder="Или задайте свой вопрос о поездке… (Ctrl+Enter — спросить)"></textarea>
-      <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn" type="button" id="aiAsk">Спросить</button></div>
-      <div id="answers"></div>
-    </section>
-  </div>
+<div class="pane" data-pane="ai">
+<section class="card">
+  <h2>Анализ ИИ</h2>
+  <div class="aist" id="aiStatus"></div>
+  <button class="btn pri wide" type="button" id="aiRun">Разобрать подготовку</button>
+  <p class="muted" style="margin:6px 0 0">Чек-лист с комментариями, даты и заметки → что упущено и что делать дальше.</p>
+  <textarea id="aiQ" style="margin-top:12px;min-height:64px" placeholder="Или задайте свой вопрос о поездке…"></textarea>
+  <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn" type="button" id="aiAsk">Спросить</button></div>
+</section>
+<div id="answers"></div>
 </div>
 </main>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -387,7 +428,7 @@ function render(){renderTrip();renderList();renderNotes();renderAI()}
 function renderTrip(){const t=data.trip;
   [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>{const el=$(s);if(document.activeElement!==el)el.value=t[k]||''});
   const its=live('items'),done=its.filter(x=>x.done).length;
-  $('#sDone').textContent=done+' / '+its.length;$('#sBar').style.width=(its.length?Math.round(done/its.length*100):0)+'%';
+  $('#sDone').textContent=done+' / '+its.length;$('#tbList').textContent=done+'/'+its.length;$('#sBar').style.width=(its.length?Math.round(done/its.length*100):0)+'%';
   const dl=$('#sDays'),dll=$('#sDaysL');
   if(t.from){const d0=new Date(t.from+'T00:00'),now=new Date();now.setHours(0,0,0,0);const n=Math.round((d0-now)/864e5);
     const back=t.to?Math.round((new Date(t.to+'T00:00')-now)/864e5):null;
@@ -411,12 +452,23 @@ function renderList(){
     h+='</div>'}
   $('#list').innerHTML=h||`<p class="empty">${filter==='done'?'Пока ничего не отмечено.':filter==='left'?'Всё готово 🎉':'Список пуст — добавьте первую задачу.'}</p>`;
   const ed=$('[data-ed]');if(ed){ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length)}}
-function renderNotes(){const ns=live('notes').sort((a,b)=>(b.at||0)-(a.at||0));
+/* кто пишет заметку: Олег или Николь (n.by). Выбор запоминается на устройстве. */
+const AUTHORS={oleg:'Олег',nikol:'Николь'};
+const lsGet=(k,d)=>{try{return localStorage.getItem(k)??d}catch(e){return d}}, lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let author=AUTHORS[lsGet('usa.author','')]?lsGet('usa.author',''):'oleg', nfilter='all', editBy='';
+const auBadge=by=>AUTHORS[by]?`<span class="au ${by}">${AUTHORS[by]}</span>`:'';
+const segHtml=(opts,cur,act)=>opts.map(([v,l])=>`<button type="button" data-a="${act}" data-v="${v}" aria-pressed="${v===cur}">${l}</button>`).join('');
+function renderNotes(){
+  $('#author').innerHTML=segHtml(Object.entries(AUTHORS),author,'au');
+  $('#nflt').innerHTML=segHtml([['all','Все'],...Object.entries(AUTHORS)],nfilter,'nf');
+  const ns=live('notes').filter(n=>nfilter==='all'||n.by===nfilter).sort((a,b)=>(b.at||0)-(a.at||0));
   $('#notes').innerHTML=ns.map(n=>editNote===n.id
-    ?`<div class="note"><textarea data-ned="${n.id}">${esc(n.t)}</textarea><div class="row" style="margin-top:6px"><span class="grow"></span><button class="btn" data-a="n-cancel">Отмена</button><button class="btn pri" data-a="n-ok" data-id="${n.id}">Сохранить</button></div></div>`
-    :`<div class="note"><div class="hd"><span class="muted">${fmtD(n.at)}</span><button class="ico" data-a="n-ed" data-id="${n.id}" title="Изменить">✎</button><button class="ico del" data-a="n-rm" data-id="${n.id}" title="Удалить">✕</button></div><div class="tx">${linkify(esc(n.t))}</div></div>`).join('')
-    ||'<p class="empty">Заметок пока нет.</p>';
-  const ta=$('[data-ned]');if(ta)ta.focus()}
+    ?`<div class="note"><div class="row" style="margin-bottom:6px"><span class="muted">Автор:</span><span class="seg">${segHtml(Object.entries(AUTHORS),editBy,'n-by')}</span></div><textarea data-ned="${n.id}">${esc(n.t)}</textarea><div class="row" style="margin-top:6px"><span class="grow"></span><button class="btn" data-a="n-cancel">Отмена</button><button class="btn pri" data-a="n-ok" data-id="${n.id}">Сохранить</button></div></div>`
+    :`<div class="note"><div class="hd">${auBadge(n.by)}<span class="muted">${fmtD(n.at)}</span><button class="ico" data-a="n-ed" data-id="${n.id}" title="Изменить">✎</button><button class="ico del" data-a="n-rm" data-id="${n.id}" title="Удалить">✕</button></div><div class="tx">${linkify(esc(n.t))}</div></div>`).join('')
+    ||`<p class="empty">${nfilter==='all'?'Заметок пока нет.':'У '+(nfilter==='oleg'?'Олега':'Николь')+' заметок пока нет.'}</p>`;
+  const ta=$('[data-ned]');if(ta&&document.activeElement!==ta&&!ta.dataset.f){ta.dataset.f=1;ta.focus()}
+  $('#tbNotes').textContent=live('notes').length||'';
+}
 const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
 function renderAI(){const c=aiCfg(),st=$('#aiStatus');
   if(!c.key){st.className='aist warn';st.innerHTML=`Нет ключа ${c.name}. <a href="#" data-a="set">Открыть общие настройки</a> — там же, где для Бюджета, Дневника и Медкарты.`}
@@ -456,9 +508,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
     case'ed-no':editId=null;renderList();break;
     case'cm':showCm=!showCm;try{localStorage.setItem('usa.showCm',showCm?'1':'0')}catch(er){}applyCm();break;
     case'rm':if(confirm('Удалить «'+data.items[id].t+'»?'))touch('items',id,{del:true});break;
-    case'n-ed':editNote=id;renderNotes();break;
+    case'n-ed':editNote=id;editBy=data.notes[id].by||'';renderNotes();break;
+    case'n-by':{const t=$('[data-ned]').value;editBy=b.dataset.v;renderNotes();$('[data-ned]').value=t;break}
+    case'au':author=b.dataset.v;lsSet('usa.author',author);renderNotes();break;
+    case'nf':nfilter=b.dataset.v;renderNotes();break;
     case'n-cancel':editNote=null;renderNotes();break;
-    case'n-ok':{const v=$('[data-ned]').value.trim();editNote=null;if(v)touch('notes',id,{t:v});else renderNotes();break}
+    case'n-ok':{const v=$('[data-ned]').value.trim();editNote=null;if(v)touch('notes',id,{t:v,by:editBy});else renderNotes();break}
     case'n-rm':if(confirm('Удалить заметку?'))touch('notes',id,{del:true});break;
     case'ai-rm':if(confirm('Удалить этот ответ?'))touch('ai',id,{del:true});break;
     case'set':e.preventDefault();luzOpenSettings();break;
@@ -468,11 +523,20 @@ document.addEventListener('keydown',e=>{
   if(e.target.matches('[data-ned]')&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){$('[data-a="n-ok"]').click()}
   if(e.target.id==='noteText'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();addNote()}
   if(e.target.id==='aiQ'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();askAI(false)}});
-function addNote(){const t=$('#noteText').value.trim();if(!t)return;const id=uid(),now=Date.now();data.notes[id]={id,t,at:now,u:now};$('#noteText').value='';save();toast('Заметка сохранена')}
+function addNote(){const t=$('#noteText').value.trim();if(!t)return;const id=uid(),now=Date.now();data.notes[id]={id,t,by:author,at:now,u:now};$('#noteText').value='';save();toast('Заметка '+(author==='nikol'?'Николь':'Олега')+' сохранена')}
 $('#noteAdd').onclick=addNote;
 [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>$(s).addEventListener('change',e=>{
   const v=e.target.value.trim();if(v===(data.trip[k]||''))return;data.trip[k]=v;data.trip.u=Date.now();save()}));
 $('#setBtn').onclick=luzOpenSettings;
+/* вкладки: запоминаем последнюю, адрес #list / #notes / #ai тоже работает */
+const TABS=['list','notes','ai'];
+function setTab(t,push){if(!TABS.includes(t))t='list';
+  $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
+  $$('.pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===t));
+  lsSet('usa.tab',t);if(push&&location.hash!=='#'+t)history.replaceState(null,'','#'+t);window.scrollTo(0,0)}
+$$('#tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab,true));
+window.addEventListener('hashchange',()=>setTab(location.hash.slice(1)));
+setTab(TABS.includes(location.hash.slice(1))?location.hash.slice(1):lsGet('usa.tab','list'));
 
 /* ===== ИИ ===== */
 function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o??0));
@@ -481,7 +545,7 @@ function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o
   const cats=[...new Set(its.map(x=>x.c||'Другое'))];
   for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t+(x.n?' — '+x.n.replace(/\s*\n\s*/g,' '):'')).join('\n')+'\n'}
   const ns=live('notes').sort((a,b)=>(a.at||0)-(b.at||0));
-  s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+n.t).join('\n'):'нет');return s}
+  s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+(AUTHORS[n.by]?AUTHORS[n.by]+': ':'')+n.t).join('\n'):'нет');return s}
 const SYSTEM='Ты опытный помощник по подготовке к поездке в США для граждан России (виза B1/B2 через посольство США в Астане). Отвечай по-русски, конкретно и по делу, без воды. '+
   'Учитывай даты: сколько осталось до вылета и что требует времени (виза, ESTA, паспорт, страховка, брони). '+
   'Если чего-то не знаешь о гражданстве или ситуации человека — так и скажи и укажи, что уточнить, а не выдумывай. '+
@@ -561,6 +625,7 @@ let renderLater=false;
 function renderSafe(){const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){renderLater=true;return}renderLater=false;render()}
 document.addEventListener('focusout',()=>setTimeout(()=>{if(renderLater)renderSafe()},0));
 $('#sync').onclick=async()=>{
+  if(matchMedia('(max-width:640px)').matches)toast($('#sync').title,2000);
   if(!clientId()){if(confirm('Для синхронизации нужен Client ID Google — он задаётся в общих настройках. Открыть их?'))luzOpenSettings();return}
   try{const r=await syncNow(true);toast(r&&r.got?'Синхронизировано, пришли изменения':'Синхронизировано')}catch(e){toast(hint(e),6000)}};
 
