@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17181a" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<title>Поездка в США</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232D62B8'/%3E%3Cpath d='M14 38l36-14-8 22-8-8-8 6 2-10z' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1d1e20;--ink-2:#4a4c50;--ink-3:#7a7d82;--line:#e3e1db;--acc:#2D62B8;--ok:#22985E;--bad:#c2412d;--warn:#9a6a00;--seg:#ecebe6;--sh:0 1px 2px rgba(0,0,0,.06)}
+@media (prefers-color-scheme: dark){:root{--bg:#17181a;--card:#222326;--ink:#ececee;--ink-2:#c3c4c8;--ink-3:#8d9096;--line:#34363a;--acc:#6b9ae6;--ok:#4cc38a;--bad:#ef7a66;--warn:#e0b44c;--seg:#2b2c30;--sh:none}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:1180px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) 16px 48px}
+header{display:flex;align-items:center;gap:10px;margin:4px 0 16px;flex-wrap:wrap}
+header h1{font-size:22px;margin:0;flex:1;letter-spacing:-.01em;min-width:180px}
+a{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px;box-shadow:var(--sh)}
+.card h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-width:0}
+textarea{width:100%;resize:vertical;min-height:70px;line-height:1.45}
+input:focus,select:focus,textarea:focus{outline:2px solid color-mix(in srgb,var(--acc) 35%,transparent);border-color:var(--acc)}
+button{font:inherit;cursor:pointer}
+.btn{font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 13px;white-space:nowrap}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn:disabled{opacity:.45;cursor:default}
+.ico{border:0;background:none;color:var(--ink-3);border-radius:7px;padding:3px 7px;font-size:14px;line-height:1}
+.ico:hover{background:var(--seg);color:var(--ink)}
+.ico.del:hover{color:var(--bad)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row>.grow{flex:1;min-width:140px}
+.muted{color:var(--ink-3);font-size:13px}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:20px;padding:6px 12px;font-size:13px;color:var(--ink-2);max-width:340px}
+.pill .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none}
+.dot.ok{background:var(--ok)}.dot.err{background:var(--bad)}.dot.busy{background:var(--warn);animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+/* поездка */
+.trip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.3fr);gap:10px;align-items:end}
+@media (max-width:700px){.trip{grid-template-columns:1fr 1fr}}
+.trip label>span{display:block;font-size:12.5px;font-weight:600;color:var(--ink-3);margin-bottom:4px}
+.trip input{width:100%}
+.stat{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.big{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.prog{flex:1;min-width:180px;height:10px;background:var(--seg);border-radius:6px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--ok);border-radius:6px;transition:width .3s}
+/* чек-лист */
+.seg{display:inline-flex;background:var(--seg);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:7px;padding:5px 10px;font-size:13px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);font-weight:650;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cat{margin-top:14px}
+.cat h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);margin:0 0 4px;display:flex;gap:8px}
+.it{display:flex;align-items:flex-start;gap:10px;padding:6px 6px;border-radius:9px}
+.it:hover{background:var(--seg)}
+.it input[type=checkbox]{width:19px;height:19px;margin:2px 0 0;accent-color:var(--ok);flex:none;cursor:pointer}
+.it .tx{flex:1;cursor:pointer;word-break:break-word}
+.it.done .tx{color:var(--ink-3);text-decoration:line-through}
+.it .acts{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.it:hover .acts,.it:focus-within .acts{opacity:1}
+@media (hover:none){.it .acts{opacity:1}}
+.it input.ed{flex:1;padding:4px 8px}
+.add{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+/* заметки */
+.note{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px}
+.note .tx{white-space:pre-wrap;word-break:break-word}
+.note .hd{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.note .hd .muted{flex:1}
+/* ИИ */
+.aist{font-size:13.5px;padding:9px 11px;border-radius:9px;background:var(--seg);margin-bottom:10px}
+.aist.warn{color:var(--warn)}
+.ans{border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-top:12px}
+.ans .q{font-weight:650;margin-bottom:2px}
+.ans .body{font-size:14.5px}
+.ans .body h4{margin:12px 0 4px;font-size:15px}
+.ans .body ul,.ans .body ol{margin:4px 0;padding-left:22px}
+.ans .body p{margin:6px 0}
+.ans .body code{background:var(--seg);padding:0 4px;border-radius:4px}
+.loading{color:var(--ink-3);font-style:italic}
+.empty{color:var(--ink-3);font-size:14px;margin:10px 0 0}
+#toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 15px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;max-width:90vw;z-index:9}
+#toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>✈️ Поездка в США</h1>
+  <button type="button" class="pill" id="sync" title="Синхронизация с Google Диском"><span class="dot"></span><span class="t">Не подключено</span></button>
+  <button type="button" class="btn" id="setBtn" title="Общие настройки: ИИ и Google Диск">⚙ Настройки</button>
+</header>
+
+<section class="card">
+  <div class="trip">
+    <label><span>Вылет</span><input type="date" id="tFrom"></label>
+    <label><span>Возвращение</span><input type="date" id="tTo"></label>
+    <label><span>Кто едет</span><input type="text" id="tWho" placeholder="напр. 2 взрослых"></label>
+    <label><span>Куда и зачем</span><input type="text" id="tDest" placeholder="напр. Нью-Йорк, Майами · туризм"></label>
+  </div>
+  <div class="stat">
+    <div><div class="big" id="sDays">—</div><div class="muted" id="sDaysL">до вылета</div></div>
+    <div><div class="big" id="sDone">0 / 0</div><div class="muted">задач готово</div></div>
+    <div class="prog"><i id="sBar" style="width:0"></i></div>
+  </div>
+</section>
+
+<div class="grid">
+  <section class="card" id="listCard">
+    <h2>Чек-лист <span class="sp"></span>
+      <span class="seg" id="flt"><button type="button" data-f="all">Все</button><button type="button" data-f="left">Осталось</button><button type="button" data-f="done">Готово</button></span>
+    </h2>
+    <div id="list"></div>
+    <form class="add row" id="addForm" autocomplete="off">
+      <input type="text" class="grow" id="addText" placeholder="Новая задача…" maxlength="300">
+      <select id="addCat"></select>
+      <button class="btn pri" type="submit">Добавить</button>
+    </form>
+  </section>
+
+  <div>
+    <section class="card">
+      <h2>Заметки</h2>
+      <textarea id="noteText" placeholder="Адреса, номера брони, телефоны, идеи, что не забыть… (Ctrl+Enter — сохранить)"></textarea>
+      <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn pri" type="button" id="noteAdd">Добавить заметку</button></div>
+      <div id="notes"></div>
+    </section>
+
+    <section class="card">
+      <h2>Анализ ИИ</h2>
+      <div class="aist" id="aiStatus"></div>
+      <div class="row"><button class="btn pri" type="button" id="aiRun">Разобрать подготовку</button><span class="muted">чек-лист, даты и заметки → что упущено и что делать дальше</span></div>
+      <textarea id="aiQ" style="margin-top:10px;min-height:56px" placeholder="Или задайте свой вопрос о поездке… (Ctrl+Enter — спросить)"></textarea>
+      <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn" type="button" id="aiAsk">Спросить</button></div>
+      <div id="answers"></div>
+    </section>
+  </div>
+</div>
+</main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ===== Поездка в США (18.11.2026) =====
+   Чек-лист, заметки и разборы ИИ. Живёт рядом с Бюджетом, Дневником и Медкартой
+   (luzinoff.github.io/usa/, локально — папка USA) и пользуется их общими
+   настройками: luz.shared.v1 (Client ID, выбор ИИ, ключи и модели), страница
+   /budget/settings.html, файл luz-settings.json на Диске. Своих полей для
+   ключей тут нет — только кнопка ⚙, ведущая на общую страницу.
+   Данные — usa.json в appDataFolder того же Диска. */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+let tt=null;
+function toast(m,ms=2400){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),ms)}
+
+/* ===== Общие настройки (как в трёх приложениях) =====
+   Здесь только читаем luz.shared.v1; пишет в него страница настроек
+   и luzSettingsSync (когда с Диска пришли более свежие ключи). */
+const LUZ_SHARED='luz.shared.v1';
+const luzShared={
+  get(){try{return JSON.parse(localStorage.getItem(LUZ_SHARED))||{}}catch(e){return {}}},
+  set(p){try{localStorage.setItem(LUZ_SHARED,JSON.stringify(Object.assign(this.get(),p)))}catch(e){}}
+};
+/* ===== Выбор ИИ: Gemini или DeepSeek — копия общего блока (18.11.2026) ===== */
+const LUZ_AI={
+  gemini:{name:'Gemini',def:'gemini-3.6-flash',keyHint:'ключ из Google AI Studio'},
+  deepseek:{name:'DeepSeek',def:'deepseek-flash',keyHint:'ключ с platform.deepseek.com'}
+};
+const luzAiProv=p=>p==='deepseek'?'deepseek':'gemini';
+async function luzAi(o){
+  const provider=luzAiProv(o.provider), key=String(o.key||'').trim();
+  if(!key) throw new Error('NO_KEY');
+  const model=String(o.model||'').trim()||LUZ_AI[provider].def;
+  const contents=Array.isArray(o.contents)?o.contents:[{role:'user',parts:[{text:String(o.contents||'')}]}];
+  const temperature=o.temperature??0.7, maxTokens=o.maxTokens||16384;
+  let url, headers, body;
+  if(provider==='gemini'){
+    url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
+    headers={'Content-Type':'application/json','x-goog-api-key':key};
+    body={contents,generationConfig:{temperature,maxOutputTokens:maxTokens}};
+    if(o.system) body.systemInstruction={parts:[{text:o.system}]};
+    if(o.json) body.generationConfig.responseMimeType='application/json';
+  } else {
+    url='https://api.deepseek.com/chat/completions';
+    headers={'Content-Type':'application/json','Authorization':'Bearer '+key};
+    const messages=o.system?[{role:'system',content:o.system}]:[];
+    for(const c of contents){
+      const parts=c.parts||[];
+      if(parts.some(p=>p.inline_data||p.inlineData)) throw new Error('NO_FILES');
+      messages.push({role:c.role==='model'?'assistant':'user',content:parts.map(p=>p.text||'').join('')});
+    }
+    body={model,messages,temperature,max_tokens:maxTokens,stream:false};
+    if(o.json) body.response_format={type:'json_object'};
+  }
+  const ctl=new AbortController(), t=setTimeout(()=>ctl.abort(),180000);
+  let r;
+  try{ r=await fetch(url,{method:'POST',headers,body:JSON.stringify(body),signal:ctl.signal}) }
+  catch(e){ throw new Error(e&&e.name==='AbortError'?'TIMEOUT':'NETWORK') }
+  finally{ clearTimeout(t) }
+  let j=null; try{ j=await r.json() }catch(e){}
+  if(!r.ok){
+    const er=j&&j.error, e=new Error((er&&(er.message||(typeof er==='string'?er:'')))||('HTTP '+r.status));
+    e.status=r.status; throw e;
+  }
+  let text='', reason='';
+  if(provider==='gemini'){
+    const c=j&&j.candidates&&j.candidates[0];
+    text=((c&&c.content&&c.content.parts)||[]).filter(p=>!p.thought).map(p=>p.text||'').join('').trim();
+    reason=(c&&c.finishReason)||'';
+  } else {
+    const c=j&&j.choices&&j.choices[0];
+    text=String((c&&c.message&&c.message.content)||'').trim();
+    reason=(c&&c.finish_reason)||'';
+  }
+  const cut=reason==='MAX_TOKENS'||reason==='length';
+  if(!text) throw new Error(reason?'EMPTY:'+reason:'EMPTY');
+  return {text,model,cut,provider};
+}
+function luzAiErr(e,provider,model,where){
+  provider=luzAiProv(provider);
+  const n=LUZ_AI[provider].name, m=String(e&&e.message||e), s=e&&e.status;
+  model=String(model||'').trim()||LUZ_AI[provider].def;
+  if(m==='NO_KEY') return `Сначала вставьте ключ ${n} ${where}.`;
+  if(m==='NO_FILES') return `${n} не принимает файлы — их читает только Gemini.`;
+  if(m==='TIMEOUT') return `${n} не ответил за три минуты. Попробуйте ещё раз.`;
+  if(m==='NETWORK') return provider==='deepseek'
+    ? `Нет связи с DeepSeek. Если интернет есть, DeepSeek мог не пустить запрос из браузера (CORS) — тогда переключитесь на Gemini ${where}.`
+    : 'Нет связи с Gemini — проверьте интернет.';
+  if(/location is not supported/i.test(m)) return 'Gemini API недоступен из вашей страны (так ответил Google).';
+  if(s===401||/API key not valid|API_KEY_INVALID|Authentication Fails|invalid api key/i.test(m)) return `Ключ ${n} не подошёл. Проверьте его ${where}.`;
+  if(s===402||/Insufficient Balance/i.test(m)) return 'На счёте DeepSeek закончились деньги — пополните баланс на platform.deepseek.com.';
+  if(s===429||/quota|RESOURCE_EXHAUSTED|rate limit/i.test(m)) return provider==='deepseek'
+    ? 'DeepSeek просит подождать: слишком много запросов. Попробуйте через минуту.'
+    : 'Исчерпан лимит запросов Gemini. Подождите немного или проверьте тариф в Google AI Studio.';
+  if(s===404||/not found|Model Not Exist/i.test(m)) return `Модель «${model}» не найдена. Проверьте название ${where}.`;
+  if(/^EMPTY/.test(m)) return `${n} вернул пустой ответ`+(m.includes(':')?' ('+m.split(':')[1]+')':'')+'. Попробуйте ещё раз.';
+  return `Ошибка ${n}: ${m}`;
+}
+/* ===== Ключи ИИ через Диск и общая страница настроек — копия общего блока ===== */
+const LUZ_SYNC_FIELDS=['aiKey','aiModel','aiProvider','dsKey','dsModel'], LUZ_FILE='luz-settings.json';
+const LUZ_SETTINGS_URL='/budget/settings.html';
+function luzOpenSettings(){
+  const file=location.protocol==='file:';
+  location.href=(file?'../Budget/settings.html':LUZ_SETTINGS_URL)+'?from='+encodeURIComponent(file?location.href:location.pathname+location.search+location.hash);
+}
+async function luzSettingsSync(tok){
+  if(!tok) return false;
+  const H={Authorization:'Bearer '+tok};
+  const q=encodeURIComponent("name='"+LUZ_FILE+"' and trashed=false");
+  const lr=await fetch('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&orderBy=createdTime&fields=files(id)&q='+q,{headers:H});
+  if(!lr.ok) throw new Error('luz-settings: Диск ответил '+lr.status);
+  const files=((await lr.json()).files)||[], id=files[0]&&files[0].id||null;
+  let remote=null;
+  if(id){
+    const r=await fetch('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media',{headers:H});
+    if(r.ok){ try{ const j=await r.json(); if(j&&typeof j==='object') remote=j }catch(e){} }
+  }
+  const local=luzShared.get(), lts=+local._ts||0, rts=remote?(+remote._ts||0):0;
+  if(remote&&rts>lts){
+    const p={_ts:rts}; for(const k of LUZ_SYNC_FIELDS) p[k]=String(remote[k]||'');
+    luzShared.set(p); return true;
+  }
+  if(remote&&rts===lts) return false;
+  if(!remote&&!LUZ_SYNC_FIELDS.some(k=>local[k])) return false;
+  const data={_ts:lts||Date.now()}; for(const k of LUZ_SYNC_FIELDS) data[k]=String(local[k]||'');
+  if(!lts) luzShared.set({_ts:data._ts});
+  const meta=id?{}:{name:LUZ_FILE,parents:['appDataFolder']}, b='luz'+Date.now().toString(36);
+  const body='--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+
+    '\r\n--'+b+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(data)+'\r\n--'+b+'--';
+  const w=await fetch('https://www.googleapis.com/upload/drive/v3/files'+(id?'/'+id:'')+'?uploadType=multipart',
+    {method:id?'PATCH':'POST',headers:{...H,'Content-Type':'multipart/related; boundary='+b},body});
+  if(!w.ok) throw new Error('luz-settings: Диск ответил '+w.status);
+  await Promise.all(files.slice(1).map(f=>fetch('https://www.googleapis.com/drive/v3/files/'+f.id,{method:'DELETE',headers:H}).catch(()=>{})));
+  return false;
+}
+/* текущий ИИ из общих настроек */
+function aiCfg(){const s=luzShared.get(),p=luzAiProv(s.aiProvider);
+  return {p,name:LUZ_AI[p].name,key:String((p==='deepseek'?s.dsKey:s.aiKey)||'').trim(),model:String((p==='deepseek'?s.dsModel:s.aiModel)||'').trim()||LUZ_AI[p].def}}
+
+/* ===== Данные =====
+   Три коллекции {id: запись} + поездка. У каждой записи u — время правки;
+   удаление — пометка del:true (чтобы удаление дошло до других устройств).
+   Слияние: по каждой записи побеждает более свежая u. */
+const LS_DATA='usa.data.v1', LS_META='usa.meta.v1';
+const CATS=['Документы','Деньги','Бронирования','Здоровье','Связь и техника','Вещи','Перед вылетом','Другое'];
+const DEFAULTS=[
+ ['Документы','Загранпаспорт действует минимум 6 месяцев после даты возвращения'],
+ ['Документы','Виза США (B1/B2) или одобренная ESTA — если страна в программе безвизового въезда'],
+ ['Документы','Медицинская страховка на все дни поездки с большим покрытием (лечение в США очень дорогое)'],
+ ['Документы','Права + международное водительское удостоверение (если аренда авто)'],
+ ['Документы','Копии паспорта, визы, страховки — в облаке и на бумаге'],
+ ['Документы','Распечатки: обратный билет, брони жилья, адрес первой ночёвки (спросят на границе)'],
+ ['Деньги','Банковская карта, которая точно работает в США, + запасная'],
+ ['Деньги','Немного наличных долларов (чаевые, мелкие расходы)'],
+ ['Деньги','Проверить лимиты и уведомить банк о поездке'],
+ ['Деньги','Прикинуть бюджет: жильё, транспорт, еда, чаевые 15–20%, налог с продаж'],
+ ['Бронирования','Авиабилеты туда и обратно'],
+ ['Бронирования','Жильё на все ночи'],
+ ['Бронирования','Трансфер из аэропорта / аренда авто'],
+ ['Бронирования','Билеты на главные музеи, парки, шоу — заранее'],
+ ['Здоровье','Личные лекарства в оригинальных упаковках + рецепты на английском'],
+ ['Здоровье','Дорожная аптечка'],
+ ['Связь и техника','eSIM или роуминг для США'],
+ ['Связь и техника','Переходник на американскую розетку (тип A/B, 110–120 В)'],
+ ['Связь и техника','Офлайн-карты городов, приложения такси, авиакомпании, банка'],
+ ['Связь и техника','Пауэрбанк — только в ручной клади'],
+ ['Вещи','Одежда по погоде в городах поездки'],
+ ['Вещи','Зарядки и кабели'],
+ ['Вещи','Жидкости в ручной клади — до 100 мл, в прозрачном пакете'],
+ ['Перед вылетом','Онлайн-регистрация на рейс'],
+ ['Перед вылетом','Проверить правила ввоза: еда, лекарства; наличные от $10 000 — декларировать'],
+ ['Перед вылетом','Сохранить контакты консульства своей страны в США'],
+ ['Перед вылетом','Скинуть близким маршрут и брони']
+];
+const emptyData=()=>({items:{},notes:{},ai:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0});
+function seed(){const d=emptyData();
+  /* постоянные id — два устройства, создавшие список с нуля, не задвоят его */
+  DEFAULTS.forEach(([c,t],i)=>{const id='d'+String(i+1).padStart(2,'0');d.items[id]={id,t,c,done:false,o:i,u:0}});return d}
+function normalize(d){const e=emptyData();if(!d||typeof d!=='object')return e;
+  for(const k of ['items','notes','ai'])e[k]=d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])?d[k]:{};
+  if(d.trip&&typeof d.trip==='object')e.trip=Object.assign(e.trip,d.trip);e.updatedAt=+d.updatedAt||0;return e}
+function merge(a,b){const o=emptyData();
+  for(const k of ['items','notes','ai']){for(const id of new Set([...Object.keys(a[k]),...Object.keys(b[k])])){
+    const x=a[k][id],y=b[k][id];o[k][id]=!x?y:!y?x:((+x.u||0)>=(+y.u||0)?x:y)}}
+  o.trip=(+a.trip.u||0)>=(+b.trip.u||0)?a.trip:b.trip;o.updatedAt=Math.max(a.updatedAt,b.updatedAt);return o}
+const stab=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((r,k2)=>(r[k2]=x[k2],r),{}):x);
+let data=(()=>{try{const s=localStorage.getItem(LS_DATA);return s?normalize(JSON.parse(s)):seed()}catch(e){return seed()}})();
+let meta=(()=>{try{return Object.assign({everSignedIn:false,lastSync:0},JSON.parse(localStorage.getItem(LS_META)||'{}'))}catch(e){return {everSignedIn:false,lastSync:0}}})();
+const saveMeta=()=>{try{localStorage.setItem(LS_META,JSON.stringify(meta))}catch(e){}};
+function persist(){try{localStorage.setItem(LS_DATA,JSON.stringify(data))}catch(e){toast('Не удалось сохранить: память браузера переполнена')}}
+function save(){data.updatedAt=Date.now();persist();render();queueSync()}
+const live=k=>Object.values(data[k]).filter(x=>x&&!x.del);
+
+/* ===== Отрисовка ===== */
+let filter='all', editId=null, editNote=null, aiBusy=false;
+const fmtD=ts=>new Date(ts).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function render(){renderTrip();renderList();renderNotes();renderAI()}
+function renderTrip(){const t=data.trip;
+  [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>{const el=$(s);if(document.activeElement!==el)el.value=t[k]||''});
+  const its=live('items'),done=its.filter(x=>x.done).length;
+  $('#sDone').textContent=done+' / '+its.length;$('#sBar').style.width=(its.length?Math.round(done/its.length*100):0)+'%';
+  const dl=$('#sDays'),dll=$('#sDaysL');
+  if(t.from){const d0=new Date(t.from+'T00:00'),now=new Date();now.setHours(0,0,0,0);const n=Math.round((d0-now)/864e5);
+    const back=t.to?Math.round((new Date(t.to+'T00:00')-now)/864e5):null;
+    if(n>0){dl.textContent=n+' '+pl(n,'день','дня','дней');dll.textContent='до вылета'}
+    else if(n===0){dl.textContent='Сегодня';dll.textContent='вылет!'}
+    else if(back!==null&&back>=0){dl.textContent='В поездке';dll.textContent=back?'ещё '+back+' '+pl(back,'день','дня','дней'):'сегодня обратно'}
+    else{dl.textContent='Позади';dll.textContent='поездка прошла'}}
+  else{dl.textContent='—';dll.textContent='укажите дату вылета'}}
+const pl=(n,a,b,c)=>{n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m===1?a:m>1&&m<5?b:c};
+function renderList(){
+  $$('#flt button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===filter?'true':'false'));
+  const its=live('items').sort((a,b)=>(a.o??0)-(b.o??0)||(a.u||0)-(b.u||0));
+  const cats=[...CATS,...new Set(its.map(x=>x.c).filter(c=>!CATS.includes(c)))];
+  let h='';
+  for(const c of cats){const all=its.filter(x=>(x.c||'Другое')===c);if(!all.length)continue;
+    const vis=all.filter(x=>filter==='all'||(filter==='done'?x.done:!x.done));if(!vis.length)continue;
+    h+=`<div class="cat"><h3>${esc(c)} <span>${all.filter(x=>x.done).length}/${all.length}</span></h3>`;
+    for(const x of vis){
+      if(editId===x.id){h+=`<div class="it"><input type="checkbox" ${x.done?'checked':''} disabled><input class="ed" data-ed="${x.id}" value="${esc(x.t)}" maxlength="300"><div class="acts" style="opacity:1"><button class="ico" data-a="ed-ok" data-id="${x.id}" title="Сохранить">✓</button></div></div>`;continue}
+      h+=`<div class="it${x.done?' done':''}"><input type="checkbox" data-a="tg" data-id="${x.id}" ${x.done?'checked':''} aria-label="Готово"><span class="tx" data-a="tg" data-id="${x.id}">${esc(x.t)}</span><div class="acts"><button class="ico" data-a="ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="rm" data-id="${x.id}" title="Удалить">✕</button></div></div>`}
+    h+='</div>'}
+  $('#list').innerHTML=h||`<p class="empty">${filter==='done'?'Пока ничего не отмечено.':filter==='left'?'Всё готово 🎉':'Список пуст — добавьте первую задачу.'}</p>`;
+  const ed=$('[data-ed]');if(ed){ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length)}}
+function renderNotes(){const ns=live('notes').sort((a,b)=>(b.at||0)-(a.at||0));
+  $('#notes').innerHTML=ns.map(n=>editNote===n.id
+    ?`<div class="note"><textarea data-ned="${n.id}">${esc(n.t)}</textarea><div class="row" style="margin-top:6px"><span class="grow"></span><button class="btn" data-a="n-cancel">Отмена</button><button class="btn pri" data-a="n-ok" data-id="${n.id}">Сохранить</button></div></div>`
+    :`<div class="note"><div class="hd"><span class="muted">${fmtD(n.at)}</span><button class="ico" data-a="n-ed" data-id="${n.id}" title="Изменить">✎</button><button class="ico del" data-a="n-rm" data-id="${n.id}" title="Удалить">✕</button></div><div class="tx">${linkify(esc(n.t))}</div></div>`).join('')
+    ||'<p class="empty">Заметок пока нет.</p>';
+  const ta=$('[data-ned]');if(ta)ta.focus()}
+const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+function renderAI(){const c=aiCfg(),st=$('#aiStatus');
+  if(!c.key){st.className='aist warn';st.innerHTML=`Нет ключа ${c.name}. <a href="#" data-a="set">Открыть общие настройки</a> — там же, где для Бюджета, Дневника и Медкарты.`}
+  else{st.className='aist';st.innerHTML=`Отвечает <b>${c.name}</b> · ${esc(c.model)}. <a href="#" data-a="set">Сменить</a>`}
+  $('#aiRun').disabled=$('#aiAsk').disabled=aiBusy;
+  const as=live('ai').sort((a,b)=>(b.at||0)-(a.at||0));
+  $('#answers').innerHTML=(aiBusy?`<div class="ans"><div class="q">${esc(aiBusy)}</div><div class="loading">${c.name} думает…</div></div>`:'')+
+    as.map(a=>`<div class="ans"><div class="row"><div class="q grow">${esc(a.q)}</div><button class="ico del" data-a="ai-rm" data-id="${a.id}" title="Удалить">✕</button></div><div class="muted">${fmtD(a.at)} · ${esc(a.model||'')}${a.cut?' · ответ обрезан':''}</div><div class="body">${md(a.a)}</div></div>`).join('')}
+/* простой markdown: заголовки, списки, жирный, код */
+function md(s){const il=t=>t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/(^|\s)\*([^*\s][^*]*?)\*/g,'$1<i>$2</i>');
+  let h='',L=null;const close=()=>{if(L){h+='</'+L+'>';L=null}};
+  for(const raw of esc(s).split('\n')){const l=raw.trimEnd();let m;
+    if(m=l.match(/^\s*#{1,6}\s+(.*)/)){close();h+='<h4>'+il(m[1])+'</h4>'}
+    else if(m=l.match(/^\s*[-*•]\s+(.*)/)){if(L!=='ul'){close();h+='<ul>';L='ul'}h+='<li>'+il(m[1])+'</li>'}
+    else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(L!=='ol'){close();h+='<ol>';L='ol'}h+='<li>'+il(m[1])+'</li>'}
+    else if(!l.trim()){close()}
+    else{close();h+='<p>'+il(l)+'</p>'}}
+  close();return h}
+
+/* ===== Действия ===== */
+$('#addCat').innerHTML=CATS.map(c=>`<option>${esc(c)}</option>`).join('');
+$('#addForm').onsubmit=e=>{e.preventDefault();const t=$('#addText').value.trim();if(!t)return;
+  const c=$('#addCat').value,o=Math.max(0,...Object.values(data.items).map(x=>x.o||0))+1,id=uid();
+  data.items[id]={id,t,c,done:false,o,u:Date.now()};$('#addText').value='';if(filter==='done')filter='all';save();$('#addText').focus()};
+$$('#flt button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderList()});
+function touch(k,id,p){const x=data[k][id];if(!x)return;Object.assign(x,p,{u:Date.now()});save()}
+function finishEdit(){const ed=$('[data-ed]');if(!ed)return;const id=ed.dataset.ed,v=ed.value.trim();editId=null;
+  if(v&&v!==data.items[id].t)touch('items',id,{t:v});else renderList()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
+  switch(a){
+    case'tg':if(b.tagName==='SPAN'||b.type==='checkbox'){touch('items',id,{done:!data.items[id].done})}break;
+    case'ed':editId=id;renderList();break;
+    case'ed-ok':finishEdit();break;
+    case'rm':if(confirm('Удалить «'+data.items[id].t+'»?'))touch('items',id,{del:true});break;
+    case'n-ed':editNote=id;renderNotes();break;
+    case'n-cancel':editNote=null;renderNotes();break;
+    case'n-ok':{const v=$('[data-ned]').value.trim();editNote=null;if(v)touch('notes',id,{t:v});else renderNotes();break}
+    case'n-rm':if(confirm('Удалить заметку?'))touch('notes',id,{del:true});break;
+    case'ai-rm':if(confirm('Удалить этот ответ?'))touch('ai',id,{del:true});break;
+    case'set':e.preventDefault();luzOpenSettings();break;
+  }});
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('[data-ed]')){if(e.key==='Enter'){e.preventDefault();finishEdit()}else if(e.key==='Escape'){editId=null;renderList()}}
+  if(e.target.matches('[data-ned]')&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){$('[data-a="n-ok"]').click()}
+  if(e.target.id==='noteText'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();addNote()}
+  if(e.target.id==='aiQ'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();askAI(false)}});
+document.addEventListener('focusout',e=>{if(e.target.matches('[data-ed]'))setTimeout(()=>{if(editId&&!$('[data-ed]:focus'))finishEdit()},120)});
+function addNote(){const t=$('#noteText').value.trim();if(!t)return;const id=uid(),now=Date.now();data.notes[id]={id,t,at:now,u:now};$('#noteText').value='';save();toast('Заметка сохранена')}
+$('#noteAdd').onclick=addNote;
+[['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>$(s).addEventListener('change',e=>{
+  const v=e.target.value.trim();if(v===(data.trip[k]||''))return;data.trip[k]=v;data.trip.u=Date.now();save()}));
+$('#setBtn').onclick=luzOpenSettings;
+
+/* ===== ИИ ===== */
+function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o??0));
+  const today=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  let s=`Сегодня: ${today}.\nПоездка в США. Вылет: ${t.from||'не указан'}. Возвращение: ${t.to||'не указано'}. Кто едет: ${t.who||'не указано'}. Куда и зачем: ${t.dest||'не указано'}.\n\nЧЕК-ЛИСТ (✔ — сделано, ☐ — не сделано):\n`;
+  const cats=[...new Set(its.map(x=>x.c||'Другое'))];
+  for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t).join('\n')+'\n'}
+  const ns=live('notes').sort((a,b)=>(a.at||0)-(b.at||0));
+  s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+n.t).join('\n'):'нет');return s}
+const SYSTEM='Ты опытный помощник по подготовке к поездке в США. Отвечай по-русски, конкретно и по делу, без воды. '+
+  'Учитывай даты: сколько осталось до вылета и что требует времени (виза, ESTA, паспорт, страховка, брони). '+
+  'Если чего-то не знаешь о гражданстве или ситуации человека — так и скажи и укажи, что уточнить, а не выдумывай. '+
+  'Формат: короткие заголовки (##) и списки.';
+const TASK='Разбери мою подготовку:\n## Готовность — одной-двумя фразами, насколько я готов\n## Срочно — что критично сделать в первую очередь и к какому сроку\n'+
+  '## Чего не хватает — важные пункты, которых нет в моём списке\n## По заметкам — замечания и что из них следует\n## План — шаги на ближайшую неделю';
+async function askAI(full){const q=full?'Разбор подготовки':$('#aiQ').value.trim();if(!q){$('#aiQ').focus();return}
+  if(aiBusy)return;const c=aiCfg();
+  if(!c.key){toast(`Нет ключа ${c.name} — откройте ⚙ Настройки`,4000);return}
+  aiBusy=q;renderAI();
+  try{const r=await luzAi({provider:c.p,key:c.key,model:c.model,system:SYSTEM,
+      contents:context()+'\n\n'+(full?TASK:'Мой вопрос: '+q),temperature:.5});
+    const id=uid(),now=Date.now();data.ai[id]={id,q,a:r.text,at:now,u:now,model:r.model,prov:r.provider,cut:r.cut};
+    if(!full)$('#aiQ').value='';aiBusy=false;save()}
+  catch(e){aiBusy=false;renderAI();toast(luzAiErr(e,c.p,c.model,'в общих настройках (⚙)'),7000)}}
+$('#aiRun').onclick=()=>askAI(true);
+$('#aiAsk').onclick=()=>askAI(false);
+
+/* ===== Google Диск =====
+   Как в Медкарте: файл usa.json в appDataFolder (доступ drive.appdata), тот же
+   Client ID из общих настроек, тихое продление входа, окно входа — по кнопке. */
+const GFILE='usa.json',GSCOPE='https://www.googleapis.com/auth/drive.appdata';
+const SY={busy:false,pending:false,timer:null,retry:null,fails:0,relogin:false};
+let tok=null,tokExp=0,gis=null;
+const clientId=()=>String(luzShared.get().clientId||'').trim();
+const signedIn=()=>!!tok&&Date.now()<tokExp;
+const autoOn=()=>!!(clientId()&&meta.everSignedIn)&&!SY.relogin&&location.protocol!=='file:';
+function setSync(state,text){const s=$('#sync');s.querySelector('.dot').className='dot '+(state||'');s.querySelector('.t').textContent=text;s.title=text}
+function queueSync(){if(!autoOn())return;if(SY.busy){SY.pending=true;return}clearTimeout(SY.timer);SY.timer=setTimeout(()=>{SY.timer=null;syncNow(false).catch(()=>{})},1500)}
+function loadGIS(){if(window.google?.accounts?.oauth2)return Promise.resolve();if(gis)return gis;
+  gis=new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=ok;s.onerror=()=>{gis=null;no(new Error('не загрузился скрипт Google — проверьте интернет'))};document.head.appendChild(s)});return gis}
+const authErr=m=>{const e=new Error(m);e.auth=true;return e};
+function auth(interactive){if(signedIn())return Promise.resolve(tok);
+  if(location.protocol==='file:')return Promise.reject(authErr('FILE_PROTO'));
+  if(!clientId())return Promise.reject(authErr('NO_CLIENT_ID'));
+  return loadGIS().then(()=>new Promise((ok,no)=>{let done=false;
+    const c=google.accounts.oauth2.initTokenClient({client_id:clientId(),scope:GSCOPE,prompt:interactive?'':'none',
+      callback:r=>{done=true;if(r&&r.access_token){tok=r.access_token;tokExp=Date.now()+(+r.expires_in||3600)*1000-60000;meta.everSignedIn=true;SY.relogin=false;saveMeta();ok(tok)}
+        else no(authErr(interactive?((r&&r.error)||'LOGIN_CANCELLED'):'NEED_LOGIN'))},
+      error_callback:e=>{done=true;no(authErr(!interactive?'NEED_LOGIN':e&&e.type==='popup_failed_to_open'?'POPUP_BLOCKED':'LOGIN_CANCELLED'))}});
+    c.requestAccessToken();setTimeout(()=>{if(!done)no(new Error('Google не ответил'))},120000)}))}
+function hint(e){const m=e&&e.message||String(e);return({NO_CLIENT_ID:'Сначала укажите Client ID в общих настройках (⚙).',FILE_PROTO:'Страница открыта как файл — вход в Google работает только на сайте (luzinoff.github.io) или localhost.',
+  NEED_LOGIN:'Нужен повторный вход в Google.',POPUP_BLOCKED:'Браузер заблокировал окно входа — разрешите всплывающие окна.',LOGIN_CANCELLED:'Вход отменён.',BUSY:'Обмен уже идёт.'})[m]||m}
+async function gapi(url,opt={}){const r=await fetch(url,{...opt,headers:{...(opt.headers||{}),Authorization:'Bearer '+tok}});
+  if(r.status===401){tok=null;tokExp=0;throw authErr('NEED_LOGIN')}
+  if(!r.ok)throw new Error('Google ответил '+r.status+': '+(await r.text()).slice(0,120));return r}
+async function listFiles(){const q=encodeURIComponent(`name='${GFILE}' and trashed=false`);
+  const j=await(await gapi('https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&orderBy=createdTime&fields=files(id)&pageSize=20&q='+q)).json();return(j.files||[]).map(f=>f.id)}
+const getFile=async id=>(await gapi('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media')).json();
+async function putFile(id,body){const m={name:GFILE,mimeType:'application/json',...(id?{}:{parents:['appDataFolder']})};const bnd='b'+uid();
+  const d=`--${bnd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n`+JSON.stringify(m)+`\r\n--${bnd}\r\nContent-Type: application/json\r\n\r\n`+body+`\r\n--${bnd}--`;
+  const r=await gapi('https://www.googleapis.com/upload/drive/v3/files'+(id?'/'+id:'')+'?uploadType=multipart&fields=id',{method:id?'PATCH':'POST',headers:{'Content-Type':'multipart/related; boundary='+bnd},body:d});return(await r.json()).id||id}
+const delFile=id=>gapi('https://www.googleapis.com/drive/v3/files/'+id,{method:'DELETE'});
+async function syncNow(interactive){
+  if(SY.busy){if(interactive)throw new Error('BUSY');SY.pending=true;return}
+  if(location.protocol==='file:'){if(interactive)throw authErr('FILE_PROTO');return}
+  if(!clientId()){if(interactive)throw authErr('NO_CLIENT_ID');return}
+  if(!interactive&&!autoOn())return;
+  SY.busy=true;if(interactive)SY.relogin=false;clearTimeout(SY.retry);SY.retry=null;setSync('busy','Синхронизация…');
+  try{await auth(interactive);
+    const ids=await listFiles();let remote=null;
+    for(const [i,id] of ids.entries()){try{const n=normalize(await getFile(id));remote=remote?merge(remote,n):n}catch(e){if(i===0)throw e}}
+    const before=stab(data);data=remote?merge(data,remote):data;persist();
+    const now=stab(data),body=JSON.stringify(data);
+    if(!remote||ids.length>1||now!==stab(remote)){await putFile(ids[0]||null,body);await Promise.all(ids.slice(1).map(x=>delFile(x).catch(()=>{})))}
+    meta.lastSync=Date.now();meta.everSignedIn=true;saveMeta();SY.fails=0;
+    setSync('ok','Синхронизировано '+new Date().toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}));
+    luzSettingsSync(tok).then(c=>{if(c)renderAI()}).catch(()=>{});/* общие ключи и выбор ИИ */
+    if(now!==before)renderSafe();return{got:now!==before}}
+  catch(e){const msg=hint(e);
+    if(e.auth&&!interactive){SY.relogin=true;tok=null;tokExp=0;setSync('err','Нужен повторный вход в Google — нажмите сюда')}
+    else{setSync('err',msg);if(!e.auth&&meta.everSignedIn){SY.fails++;const w=Math.min(60000,5000*2**(SY.fails-1));clearTimeout(SY.retry);SY.retry=setTimeout(()=>{SY.retry=null;syncNow(false).catch(()=>{})},w)}}
+    if(interactive)throw e}
+  finally{SY.busy=false;if(SY.pending){SY.pending=false;queueSync()}}}
+let renderLater=false;
+function renderSafe(){const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){renderLater=true;return}renderLater=false;render()}
+document.addEventListener('focusout',()=>setTimeout(()=>{if(renderLater)renderSafe()},0));
+$('#sync').onclick=async()=>{
+  if(!clientId()){if(confirm('Для синхронизации нужен Client ID Google — он задаётся в общих настройках. Открыть их?'))luzOpenSettings();return}
+  try{const r=await syncNow(true);toast(r&&r.got?'Синхронизировано, пришли изменения':'Синхронизировано')}catch(e){toast(hint(e),6000)}};
+
+/* правки в соседней вкладке: данные или общие настройки */
+window.addEventListener('storage',e=>{
+  if(e.key===LS_DATA){try{data=normalize(JSON.parse(e.newValue));renderSafe()}catch(er){}}
+  if(e.key===LUZ_SHARED){renderAI();if(!clientId()){tok=null;tokExp=0}}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){renderAI();if(Date.now()-meta.lastSync>60000)queueSync()}});
+
+render();persist();
+if(location.protocol==='file:')setSync('','Открыто с диска — без синхронизации');
+else if(!clientId())setSync('','Google Диск не настроен');
+else if(meta.everSignedIn){setSync('','Подключение…');syncNow(false).catch(()=>{})}
+else setSync('','Войти и синхронизировать');
+</script>
+</body>
+</html>
