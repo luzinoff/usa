@@ -63,7 +63,12 @@ button{font:inherit;cursor:pointer}
 .it .acts{display:flex;gap:2px;opacity:0;transition:opacity .15s}
 .it:hover .acts,.it:focus-within .acts{opacity:1}
 @media (hover:none){.it .acts{opacity:1}}
-.it input.ed{flex:1;padding:4px 8px}
+.it .body{flex:1;min-width:0}
+.it .cm{font-size:13px;color:var(--ink-3);margin-top:2px;white-space:pre-wrap;word-break:break-word}
+.it.done .cm{opacity:.75}
+.nocm .it .cm{display:none}
+.it .edw{flex:1;display:flex;flex-direction:column;gap:6px}
+.it .edw input{padding:5px 8px}.it .edw textarea{min-height:64px;font-size:14px}
 .add{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 /* заметки */
 .note{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px}
@@ -110,7 +115,7 @@ button{font:inherit;cursor:pointer}
 
 <div class="grid">
   <section class="card" id="listCard">
-    <h2>Чек-лист <span class="sp"></span>
+    <h2>Чек-лист <button type="button" class="ico" data-a="cm" id="cmBtn"></button><span class="sp"></span>
       <span class="seg" id="flt"><button type="button" data-f="all">Все</button><button type="button" data-f="left">Осталось</button><button type="button" data-f="done">Готово</button></span>
     </h2>
     <div id="list"></div>
@@ -286,49 +291,89 @@ function aiCfg(){const s=luzShared.get(),p=luzAiProv(s.aiProvider);
    удаление — пометка del:true (чтобы удаление дошло до других устройств).
    Слияние: по каждой записи побеждает более свежая u. */
 const LS_DATA='usa.data.v1', LS_META='usa.meta.v1';
-const CATS=['Документы','Деньги','Бронирования','Здоровье','Связь и техника','Вещи','Перед вылетом','Другое'];
+/* Разделы: сначала три этапа визы (граждане РФ, подача в Астане — план владельца,
+   сверен с правилами на ноябрь 2026), затем сборы в саму поездку. */
+const CATS=['Этап 1 · Подготовка к визе','Этап 1 · Документы на собеседование','Этап 2 · Астана','Этап 3 · После одобрения',
+  'Документы','Деньги','Бронирования','Здоровье','Связь и техника','Вещи','Перед вылетом','Другое'];
+const [V1,V1D,V2,V3]=CATS;
+/* [id, раздел, задача, комментарий]. id постоянные: d.. — первая версия, v.. — визовые этапы (18.11.2026). */
 const DEFAULTS=[
- ['Документы','Загранпаспорт действует минимум 6 месяцев после даты возвращения'],
- ['Документы','Виза США (B1/B2) или одобренная ESTA — если страна в программе безвизового въезда'],
- ['Документы','Медицинская страховка на все дни поездки с большим покрытием (лечение в США очень дорогое)'],
- ['Документы','Права + международное водительское удостоверение (если аренда авто)'],
- ['Документы','Копии паспорта, визы, страховки — в облаке и на бумаге'],
- ['Документы','Распечатки: обратный билет, брони жилья, адрес первой ночёвки (спросят на границе)'],
- ['Деньги','Банковская карта, которая точно работает в США, + запасная'],
- ['Деньги','Немного наличных долларов (чаевые, мелкие расходы)'],
- ['Деньги','Проверить лимиты и уведомить банк о поездке'],
- ['Деньги','Прикинуть бюджет: жильё, транспорт, еда, чаевые 15–20%, налог с продаж'],
- ['Бронирования','Авиабилеты туда и обратно'],
- ['Бронирования','Жильё на все ночи'],
- ['Бронирования','Трансфер из аэропорта / аренда авто'],
- ['Бронирования','Билеты на главные музеи, парки, шоу — заранее'],
- ['Здоровье','Личные лекарства в оригинальных упаковках + рецепты на английском'],
- ['Здоровье','Дорожная аптечка'],
- ['Связь и техника','eSIM или роуминг для США'],
- ['Связь и техника','Переходник на американскую розетку (тип A/B, 110–120 В)'],
- ['Связь и техника','Офлайн-карты городов, приложения такси, авиакомпании, банка'],
- ['Связь и техника','Пауэрбанк — только в ручной клади'],
- ['Вещи','Одежда по погоде в городах поездки'],
- ['Вещи','Зарядки и кабели'],
- ['Вещи','Жидкости в ручной клади — до 100 мл, в прозрачном пакете'],
- ['Перед вылетом','Онлайн-регистрация на рейс'],
- ['Перед вылетом','Проверить правила ввоза: еда, лекарства; наличные от $10 000 — декларировать'],
- ['Перед вылетом','Сохранить контакты консульства своей страны в США'],
- ['Перед вылетом','Скинуть близким маршрут и брони']
+ ['d01',V1,'Проверить загранпаспорта (свой и дочери)','Паспорт должен действовать весь срок поездки. Лучше с запасом 6 месяцев после возвращения: для граждан РФ США этого формально не требуют, но авиакомпании иногда проверяют. У дочери — отдельный загранпаспорт.'],
+ ['v02',V1,'Выбрать место подачи: Астана или Варшава','С 6 сентября 2025 г. граждане РФ без ВНЖ в другой стране подают на визу США только в Астане или Варшаве. Астана — без визы, собеседование на русском, но очередь самая долгая. Варшава — нужна шенгенская (польская) виза, свободные даты обычно ближе.'],
+ ['v03',V1,'Заполнить и отправить DS-160 — на себя и на дочь (две анкеты)','https://ceac.state.gov/genniv — место подачи Astana. Заполняется на английском. Распечатать страницу подтверждения (номер начинается на «AA»).\nВ Астане запись закрывается в 17:00 за 3 рабочих дня до собеседования: к этому моменту анкеты должны быть отправлены (не просто заполнены), а номера — внесены в кабинет AIS. Номер DS-160 в кабинете можно поменять только один раз.'],
+ ['v04',V1,'Создать кабинет AIS и добавить себя и дочь одной группой','https://ais.usvisa-info.com/ru-kz/niv — группой, чтобы записаться на один слот. У каждого — свой номер DS-160.'],
+ ['v05',V1,'Оплатить консульский сбор: $185 за каждого ($370 на двоих)','Без оплаты календарь записи не откроется. Российские карты не принимаются — иностранная карта или способ из кабинета AIS (в т. ч. наличными в казахстанском банке). Квитанция действует 365 дней, при отказе не возвращается.'],
+ ['v06',V1,'Записаться на собеседование — один слот на двоих','Самый долгий этап. Открытые даты в Астане — примерно через 1,5–2 года (основная запись на 2028 г.); более ранние появляются в основном из‑за отмен — проверять кабинет регулярно, утром и вечером. Перенос записи бесплатный, но число переносов ограничено.'],
+ ['v07',V1,'Дочь идёт на собеседование лично','С 2 сентября 2025 г. освобождение для детей до 14 лет отменено — ребёнок приходит вместе с родителем.'],
+ ['v08',V1,'Если летите без второго родителя — нотариальное согласие на выезд дочери','Лучше сразу с переводом на английский. Если летят оба родителя — пункт не нужен.'],
+ ['v09',V1D,'Загранпаспорта — свой и дочери','Плюс старые паспорта с визами США и шенгенскими, если есть: хорошая история поездок помогает.'],
+ ['v10',V1D,'Распечатки подтверждения DS-160 со штрих-кодом — на каждого',''],
+ ['v11',V1D,'Подтверждение записи (Appointment Confirmation)',''],
+ ['v12',V1D,'Фото 5×5 см на каждого, не старше 6 месяцев','Цифровое фото загружается в DS-160; бумажное — на всякий случай.'],
+ ['v13',V1D,'Свидетельство о рождении дочери — оригинал',''],
+ ['v14',V1D,'(По желанию) справка с работы, выписка из банка, документы о собственности','Посольство в Астане называет их необязательными и просит лишь в отдельных случаях. Но если так спокойнее — взять.'],
+ ['v15',V2,'Билеты и жильё в Астане на даты собеседования','Заложить несколько рабочих дней после собеседования на возврат паспортов.'],
+ ['v16',V2,'Въехать в Казахстан','Гражданам РФ виза не нужна, до 90 дней. Въехать можно и по внутреннему паспорту, но на собеседование нужен загранпаспорт.'],
+ ['v17',V2,'Пройти собеседование в посольстве США в Астане','Можно на русском. Взять всё из «Документы на собеседование». Решение обычно сообщают в тот же день; паспорта остаются в посольстве для вклейки визы.'],
+ ['v18',V2,'Получить паспорта с визой','Курьер или самовывоз выбирается заранее в кабинете AIS. Обычно несколько рабочих дней.'],
+ ['v19',V3,'Visa Integrity Fee — заложить $250 за каждого','Закон с июля 2025 г.; платится только при выдаче визы, при отказе — нет. На ноябрь 2026 г. сбор берут не все посольства — уточнить в Астане. Официальные сборы на двоих: $370 точно, до $870 вместе с этим сбором.'],
+ ['v20',V3,'Проверить визу: имена, даты, срок действия','Гражданам РФ B1/B2 обычно дают многократную до 36 месяцев — поездка должна уложиться в этот срок. Срок визы ≠ срок пребывания: сколько можно находиться в США, решает пограничник при въезде (обычно до 6 месяцев).'],
+ ['d03','Документы','Медицинская страховка на все дни поездки с большим покрытием','Лечение в США очень дорогое.'],
+ ['d04','Документы','Права + международное водительское удостоверение (если аренда авто)',''],
+ ['d05','Документы','Копии паспортов, виз, страховки — в облаке и на бумаге',''],
+ ['d06','Документы','Распечатки: обратные билеты, брони жилья, адрес первой ночёвки','Могут спросить на границе.'],
+ ['d07','Деньги','Банковская карта, которая точно работает в США, + запасная','Российские карты в США не работают.'],
+ ['d08','Деньги','Наличные доллары на первые дни','Чаевые, мелкие расходы; от $10 000 на человека — декларировать.'],
+ ['d09','Деньги','Проверить лимиты карт',''],
+ ['d10','Деньги','Прикинуть бюджет: жильё, транспорт, еда, чаевые 15–20%, налог с продаж',''],
+ ['d11','Бронирования','Авиабилеты туда и обратно','Прямых рейсов из России нет — маршрут через третьи страны.'],
+ ['d12','Бронирования','Жильё на все ночи',''],
+ ['d13','Бронирования','Трансфер из аэропорта / аренда авто',''],
+ ['d14','Бронирования','Билеты на главные музеи, парки, шоу — заранее',''],
+ ['d15','Здоровье','Личные лекарства в оригинальных упаковках + рецепты на английском',''],
+ ['d16','Здоровье','Дорожная аптечка (в том числе детская)',''],
+ ['d17','Связь и техника','eSIM или роуминг для США',''],
+ ['d18','Связь и техника','Переходник на американскую розетку (тип A/B, 110–120 В)',''],
+ ['d19','Связь и техника','Офлайн-карты городов, приложения такси, авиакомпании',''],
+ ['d20','Связь и техника','Пауэрбанк — только в ручной клади',''],
+ ['d21','Вещи','Одежда по погоде в городах поездки',''],
+ ['d22','Вещи','Зарядки и кабели',''],
+ ['d23','Вещи','Жидкости в ручной клади — до 100 мл, в прозрачном пакете',''],
+ ['d24','Перед вылетом','Онлайн-регистрация на рейс',''],
+ ['d25','Перед вылетом','Проверить правила ввоза в США: еда, лекарства, наличные',''],
+ ['d26','Перед вылетом','Сохранить контакты посольства РФ и консульств в США',''],
+ ['d27','Перед вылетом','Скинуть близким маршрут и брони','']
 ];
-const emptyData=()=>({items:{},notes:{},ai:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0});
-function seed(){const d=emptyData();
-  /* постоянные id — два устройства, создавшие список с нуля, не задвоят его */
-  DEFAULTS.forEach(([c,t],i)=>{const id='d'+String(i+1).padStart(2,'0');d.items[id]={id,t,c,done:false,o:i,u:0}});return d}
+const REMOVED=['d02'];/* «Виза или ESTA» — заменён этапами визы */
+const SUMMARY_NOTE='Сводка по визе (сверено на 18.11.2026)\n'+
+ '• Где подавать: граждане РФ — только Астана или Варшава (с 06.09.2025).\n'+
+ '• Консульский сбор: $185 с человека, до записи, действует 365 дней, не возвращается.\n'+
+ '• Visa Integrity Fee: $250 с человека, только при выдаче визы; на ноябрь 2026 берут не везде.\n'+
+ '• Итого на двоих: $370 точно, до $870 с новым сбором.\n'+
+ '• DS-160: отправить и внести в AIS до 17:00 за 3 рабочих дня до собеседования.\n'+
+ '• Дети: с 02.09.2025 собеседование лично, в любом возрасте.\n'+
+ '• Виза B1/B2 гражданам РФ: обычно многократная, до 36 месяцев.\n'+
+ '• Ожидание в Астане: открытые даты — около 1,5–2 лет вперёд (2028 г.), раньше — только отмены.';
+const SEED_V=2;
+const emptyData=()=>({items:{},notes:{},ai:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0,seedV:0});
+/* Стартовые пункты с постоянными id и u:0. Нетронутые (u===0) пункты обновляются
+   до текущей версии списка одинаково на всех устройствах; тронутые — не трогаем. */
+function applySeed(d){if((d.seedV||0)>=SEED_V)return false;
+  DEFAULTS.forEach(([id,c,t,n],o)=>{const x=d.items[id];if(!x)d.items[id]={id,t,c,n,done:false,o,u:0};else if(!(+x.u))Object.assign(x,{t,c,n,o})});
+  for(const id of REMOVED){const x=d.items[id];if(!x||!(+x.u))d.items[id]={id,del:true,u:1}}
+  if(!d.notes.n01)d.notes.n01={id:'n01',t:SUMMARY_NOTE,at:Date.UTC(2026,10,18,10),u:0};
+  d.seedV=SEED_V;return true}
+function seed(){const d=emptyData();applySeed(d);return d}
 function normalize(d){const e=emptyData();if(!d||typeof d!=='object')return e;
   for(const k of ['items','notes','ai'])e[k]=d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])?d[k]:{};
-  if(d.trip&&typeof d.trip==='object')e.trip=Object.assign(e.trip,d.trip);e.updatedAt=+d.updatedAt||0;return e}
+  if(d.trip&&typeof d.trip==='object')e.trip=Object.assign(e.trip,d.trip);e.updatedAt=+d.updatedAt||0;e.seedV=+d.seedV||0;return e}
 function merge(a,b){const o=emptyData();
   for(const k of ['items','notes','ai']){for(const id of new Set([...Object.keys(a[k]),...Object.keys(b[k])])){
     const x=a[k][id],y=b[k][id];o[k][id]=!x?y:!y?x:((+x.u||0)>=(+y.u||0)?x:y)}}
-  o.trip=(+a.trip.u||0)>=(+b.trip.u||0)?a.trip:b.trip;o.updatedAt=Math.max(a.updatedAt,b.updatedAt);return o}
+  o.trip=(+a.trip.u||0)>=(+b.trip.u||0)?a.trip:b.trip;o.updatedAt=Math.max(a.updatedAt,b.updatedAt);o.seedV=Math.max(a.seedV||0,b.seedV||0);return o}
 const stab=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((r,k2)=>(r[k2]=x[k2],r),{}):x);
 let data=(()=>{try{const s=localStorage.getItem(LS_DATA);return s?normalize(JSON.parse(s)):seed()}catch(e){return seed()}})();
+applySeed(data);
 let meta=(()=>{try{return Object.assign({everSignedIn:false,lastSync:0},JSON.parse(localStorage.getItem(LS_META)||'{}'))}catch(e){return {everSignedIn:false,lastSync:0}}})();
 const saveMeta=()=>{try{localStorage.setItem(LS_META,JSON.stringify(meta))}catch(e){}};
 function persist(){try{localStorage.setItem(LS_DATA,JSON.stringify(data))}catch(e){toast('Не удалось сохранить: память браузера переполнена')}}
@@ -361,8 +406,8 @@ function renderList(){
     const vis=all.filter(x=>filter==='all'||(filter==='done'?x.done:!x.done));if(!vis.length)continue;
     h+=`<div class="cat"><h3>${esc(c)} <span>${all.filter(x=>x.done).length}/${all.length}</span></h3>`;
     for(const x of vis){
-      if(editId===x.id){h+=`<div class="it"><input type="checkbox" ${x.done?'checked':''} disabled><input class="ed" data-ed="${x.id}" value="${esc(x.t)}" maxlength="300"><div class="acts" style="opacity:1"><button class="ico" data-a="ed-ok" data-id="${x.id}" title="Сохранить">✓</button></div></div>`;continue}
-      h+=`<div class="it${x.done?' done':''}"><input type="checkbox" data-a="tg" data-id="${x.id}" ${x.done?'checked':''} aria-label="Готово"><span class="tx" data-a="tg" data-id="${x.id}">${esc(x.t)}</span><div class="acts"><button class="ico" data-a="ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="rm" data-id="${x.id}" title="Удалить">✕</button></div></div>`}
+      if(editId===x.id){h+=`<div class="it"><input type="checkbox" ${x.done?'checked':''} disabled><div class="edw"><input data-ed="${x.id}" value="${esc(x.t)}" maxlength="300" placeholder="Задача"><textarea data-edn placeholder="Комментарий: где, сколько стоит, на что обратить внимание">${esc(x.n||'')}</textarea><div class="row"><span class="grow"></span><button class="btn" data-a="ed-no">Отмена</button><button class="btn pri" data-a="ed-ok">Сохранить</button></div></div></div>`;continue}
+      h+=`<div class="it${x.done?' done':''}"><input type="checkbox" data-a="tg" data-id="${x.id}" ${x.done?'checked':''} aria-label="Готово"><div class="body"><span class="tx" data-a="tg" data-id="${x.id}">${esc(x.t)}</span>${x.n?`<div class="cm">${linkify(esc(x.n))}</div>`:''}</div><div class="acts"><button class="ico" data-a="ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="rm" data-id="${x.id}" title="Удалить">✕</button></div></div>`}
     h+='</div>'}
   $('#list').innerHTML=h||`<p class="empty">${filter==='done'?'Пока ничего не отмечено.':filter==='left'?'Всё готово 🎉':'Список пуст — добавьте первую задачу.'}</p>`;
   const ed=$('[data-ed]');if(ed){ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length)}}
@@ -392,19 +437,24 @@ function md(s){const il=t=>t.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`([^
   close();return h}
 
 /* ===== Действия ===== */
+let showCm=(()=>{try{return localStorage.getItem('usa.showCm')!=='0'}catch(e){return true}})();
+function applyCm(){$('#listCard').classList.toggle('nocm',!showCm);$('#cmBtn').textContent=showCm?'скрыть комментарии':'показать комментарии'}
+applyCm();
 $('#addCat').innerHTML=CATS.map(c=>`<option>${esc(c)}</option>`).join('');
 $('#addForm').onsubmit=e=>{e.preventDefault();const t=$('#addText').value.trim();if(!t)return;
   const c=$('#addCat').value,o=Math.max(0,...Object.values(data.items).map(x=>x.o||0))+1,id=uid();
   data.items[id]={id,t,c,done:false,o,u:Date.now()};$('#addText').value='';if(filter==='done')filter='all';save();$('#addText').focus()};
 $$('#flt button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderList()});
 function touch(k,id,p){const x=data[k][id];if(!x)return;Object.assign(x,p,{u:Date.now()});save()}
-function finishEdit(){const ed=$('[data-ed]');if(!ed)return;const id=ed.dataset.ed,v=ed.value.trim();editId=null;
-  if(v&&v!==data.items[id].t)touch('items',id,{t:v});else renderList()}
+function finishEdit(){const ed=$('[data-ed]');if(!ed)return;const id=ed.dataset.ed,v=ed.value.trim(),n=$('[data-edn]').value.trim(),x=data.items[id];editId=null;
+  if(v&&(v!==x.t||n!==(x.n||'')))touch('items',id,{t:v,n});else renderList()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
   switch(a){
     case'tg':if(b.tagName==='SPAN'||b.type==='checkbox'){touch('items',id,{done:!data.items[id].done})}break;
     case'ed':editId=id;renderList();break;
     case'ed-ok':finishEdit();break;
+    case'ed-no':editId=null;renderList();break;
+    case'cm':showCm=!showCm;try{localStorage.setItem('usa.showCm',showCm?'1':'0')}catch(er){}applyCm();break;
     case'rm':if(confirm('Удалить «'+data.items[id].t+'»?'))touch('items',id,{del:true});break;
     case'n-ed':editNote=id;renderNotes();break;
     case'n-cancel':editNote=null;renderNotes();break;
@@ -414,11 +464,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
     case'set':e.preventDefault();luzOpenSettings();break;
   }});
 document.addEventListener('keydown',e=>{
-  if(e.target.matches('[data-ed]')){if(e.key==='Enter'){e.preventDefault();finishEdit()}else if(e.key==='Escape'){editId=null;renderList()}}
+  if(e.target.matches('[data-ed],[data-edn]')){if(e.key==='Enter'&&(e.target.matches('[data-ed]')||e.ctrlKey||e.metaKey)){e.preventDefault();finishEdit()}else if(e.key==='Escape'){editId=null;renderList()}}
   if(e.target.matches('[data-ned]')&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){$('[data-a="n-ok"]').click()}
   if(e.target.id==='noteText'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();addNote()}
   if(e.target.id==='aiQ'&&e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();askAI(false)}});
-document.addEventListener('focusout',e=>{if(e.target.matches('[data-ed]'))setTimeout(()=>{if(editId&&!$('[data-ed]:focus'))finishEdit()},120)});
 function addNote(){const t=$('#noteText').value.trim();if(!t)return;const id=uid(),now=Date.now();data.notes[id]={id,t,at:now,u:now};$('#noteText').value='';save();toast('Заметка сохранена')}
 $('#noteAdd').onclick=addNote;
 [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>$(s).addEventListener('change',e=>{
@@ -430,12 +479,13 @@ function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o
   const today=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   let s=`Сегодня: ${today}.\nПоездка в США. Вылет: ${t.from||'не указан'}. Возвращение: ${t.to||'не указано'}. Кто едет: ${t.who||'не указано'}. Куда и зачем: ${t.dest||'не указано'}.\n\nЧЕК-ЛИСТ (✔ — сделано, ☐ — не сделано):\n`;
   const cats=[...new Set(its.map(x=>x.c||'Другое'))];
-  for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t).join('\n')+'\n'}
+  for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t+(x.n?' — '+x.n.replace(/\s*\n\s*/g,' '):'')).join('\n')+'\n'}
   const ns=live('notes').sort((a,b)=>(a.at||0)-(b.at||0));
   s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+n.t).join('\n'):'нет');return s}
-const SYSTEM='Ты опытный помощник по подготовке к поездке в США. Отвечай по-русски, конкретно и по делу, без воды. '+
+const SYSTEM='Ты опытный помощник по подготовке к поездке в США для граждан России (виза B1/B2 через посольство США в Астане). Отвечай по-русски, конкретно и по делу, без воды. '+
   'Учитывай даты: сколько осталось до вылета и что требует времени (виза, ESTA, паспорт, страховка, брони). '+
   'Если чего-то не знаешь о гражданстве или ситуации человека — так и скажи и укажи, что уточнить, а не выдумывай. '+
+  'Визовые правила и сборы часто меняются — помечай, что стоит перепроверить на сайте посольства (kz.usembassy.gov) или travel.state.gov. '+
   'Формат: короткие заголовки (##) и списки.';
 const TASK='Разбери мою подготовку:\n## Готовность — одной-двумя фразами, насколько я готов\n## Срочно — что критично сделать в первую очередь и к какому сроку\n'+
   '## Чего не хватает — важные пункты, которых нет в моём списке\n## По заметкам — замечания и что из них следует\n## План — шаги на ближайшую неделю';
