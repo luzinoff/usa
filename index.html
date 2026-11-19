@@ -98,6 +98,18 @@ button{font:inherit;cursor:pointer}
 .ans .body p{margin:6px 0}
 .ans .body code{background:var(--seg);padding:0 4px;border-radius:4px}
 .loading{color:var(--ink-3);font-style:italic}
+/* грин-карта: заявки DV */
+.kv{display:grid;grid-template-columns:170px minmax(0,1fr);gap:5px 12px;margin:0;font-size:14px}
+.kv dt{color:var(--ink-3)}.kv dd{margin:0;word-break:break-word}
+.mono{font-family:ui-monospace,Consolas,"Cascadia Mono",monospace;letter-spacing:.03em}
+.badge{font-size:11.5px;font-weight:650;border-radius:6px;padding:2px 8px;background:var(--seg);color:var(--ink-3);white-space:nowrap}
+.badge.live{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.trip.dvf{grid-template-columns:repeat(2,minmax(0,1fr))}
+.trip.dvf .wide2{grid-column:1/-1}
+@media (max-width:640px){.trip.dvf{grid-template-columns:1fr}}
+.dvnote{font-size:13.5px;color:var(--ink-2);margin:10px 0 0;padding:9px 11px;border-radius:9px;background:var(--seg)}
+.dvnote p{margin:0 0 6px}.dvnote p:last-child{margin:0}
+@media (max-width:640px){.kv{grid-template-columns:1fr;gap:0}.kv dt{margin-top:8px;font-size:12.5px}.kv dt:first-child{margin-top:0}}
 .empty{color:var(--ink-3);font-size:14px;margin:10px 0 0}
 #toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:9px 15px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;max-width:90vw;z-index:9}
 #toast.on{opacity:1;transform:translateX(-50%)}
@@ -135,6 +147,7 @@ button{font:inherit;cursor:pointer}
   <button type="button" role="tab" data-tab="list"><span class="ti">✓</span><span class="tl">Чек-лист</span><span class="tb" id="tbList"></span></button>
   <button type="button" role="tab" data-tab="notes"><span class="ti">✎</span><span class="tl">Заметки</span><span class="tb" id="tbNotes"></span></button>
   <button type="button" role="tab" data-tab="ai"><span class="ti">✦</span><span class="tl">ИИ</span></button>
+  <button type="button" role="tab" data-tab="dv"><span class="ti">★</span><span class="tl">Грин-карта</span></button>
 </nav>
 
 <div class="pane" data-pane="list">
@@ -186,6 +199,42 @@ button{font:inherit;cursor:pointer}
   <div class="row" style="margin-top:8px"><span class="grow"></span><button class="btn" type="button" id="aiAsk">Спросить</button></div>
 </section>
 <div id="answers"></div>
+</div>
+
+<div class="pane" data-pane="dv">
+<section class="card">
+  <h2>Лотерея Green Card (DV)</h2>
+  <p class="muted" style="margin:0">Подтверждения подачи заявок в программу Diversity Visa Госдепартамента США. Хранятся вместе с остальными данными приложения — на устройстве и на Google Диске.</p>
+  <div class="dvnote">
+    <p>Результат смотрели на <a href="https://dvprogram.state.gov/ESC/" target="_blank" rel="noopener">dvprogram.state.gov/ESC</a>: номер подтверждения + фамилия + год рождения. Писем почтой не присылают — только через этот сайт.</p>
+    <p>Подавать можно одну заявку на человека в год: повторная заявка снимает с участия.</p>
+  </div>
+</section>
+<div id="dvList"></div>
+<section class="card" id="dvForm">
+  <h2 id="dvFormH">Добавить заявку</h2>
+  <textarea id="dvPaste" placeholder="Вставьте текст страницы «Submission Confirmation» (или всё содержимое сохранённого .txt / .html) — поля заполнятся сами"></textarea>
+  <div class="row" style="margin:8px 0 12px"><span class="grow"></span><button class="btn" type="button" id="dvParse">Разобрать текст</button></div>
+  <div class="trip dvf">
+    <label><span>Розыгрыш</span><input id="dv_prog" placeholder="DV-2024" maxlength="20"></label>
+    <label><span>Заявитель</span><input id="dv_name" placeholder="LAST, FIRST" maxlength="100"></label>
+    <label><span>Год рождения</span><input id="dv_birth" inputmode="numeric" maxlength="4"></label>
+    <label><span>Номер подтверждения</span><input id="dv_conf" class="mono" maxlength="30" autocomplete="off"></label>
+    <label><span>Когда подана</span><input id="dv_sent" maxlength="120"></label>
+    <label><span>Проверка с</span><input type="date" id="dv_from"></label>
+    <label><span>Проверка по</span><input type="date" id="dv_to"></label>
+    <label><span>Цифровая подпись</span><input id="dv_sig" class="mono" maxlength="80" autocomplete="off"></label>
+    <label class="wide2"><span>Заметка (где оригинал, результат)</span><input id="dv_n" maxlength="500"></label>
+  </div>
+  <div class="row" style="margin-top:10px"><span class="grow"></span><button class="btn" type="button" id="dvCancel" hidden>Отмена</button><button class="btn pri" type="button" id="dvSave">Сохранить</button></div>
+</section>
+<section class="card">
+  <h2>Лотерея и виза B1/B2</h2>
+  <div class="dvnote" style="margin:0">
+    <p>Участие в лотерее само по себе не причина отказа в туристической визе. Но консул по 214(b) решает, вернётесь ли вы домой, и о планах переезда могут спросить.</p>
+    <p>Если спросят — отвечать честно и так же, как в DS-160.</p>
+  </div>
+</section>
 </div>
 </main>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -421,7 +470,7 @@ const SUMMARY_NOTE='Сводка по визе для жителей Росси�
  '• Казахстан: разрешение QazETA — обязательно с 01.07.2027, бесплатно, за 72 часа до въезда.\n'+
  '• Паспорт: Россия в списке исключений CBP из правила «+6 месяцев», но запас лучше иметь.';
 const SEED_V=5;
-const emptyData=()=>({items:{},notes:{},ai:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0,seedV:0});
+const emptyData=()=>({items:{},notes:{},ai:{},dv:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0,seedV:0});
 /* Стартовые пункты с постоянными id и u:0. Нетронутые (u===0) пункты и заметка-сводка
    обновляются до текущей версии одинаково на всех устройствах; тронутые — не трогаем. */
 function applySeed(d){if((d.seedV||0)>=SEED_V)return false;
@@ -432,12 +481,14 @@ function applySeed(d){if((d.seedV||0)>=SEED_V)return false;
   for(const id of REMOVED){const x=d.items[id];if(!x||!(+x.u))d.items[id]={id,del:true,u:1}}
   const sn=d.notes.n01;if(!sn)d.notes.n01={id:'n01',t:SUMMARY_NOTE,at:Date.UTC(2026,10,18,10),u:0};else if(!(+sn.u))sn.t=SUMMARY_NOTE;
   d.seedV=SEED_V;return true}
+/* коллекции {id: запись}; dv — заявки в лотерею Green Card (вводятся в приложении) */
+const COLS=['items','notes','ai','dv'];
 function seed(){const d=emptyData();applySeed(d);return d}
 function normalize(d){const e=emptyData();if(!d||typeof d!=='object')return e;
-  for(const k of ['items','notes','ai'])e[k]=d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])?d[k]:{};
+  for(const k of COLS)e[k]=d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k])?d[k]:{};
   if(d.trip&&typeof d.trip==='object')e.trip=Object.assign(e.trip,d.trip);e.updatedAt=+d.updatedAt||0;e.seedV=+d.seedV||0;return e}
 function merge(a,b){const o=emptyData();
-  for(const k of ['items','notes','ai']){for(const id of new Set([...Object.keys(a[k]),...Object.keys(b[k])])){
+  for(const k of COLS){for(const id of new Set([...Object.keys(a[k]),...Object.keys(b[k])])){
     const x=a[k][id],y=b[k][id];o[k][id]=!x?y:!y?x:((+x.u||0)>=(+y.u||0)?x:y)}}
   o.trip=(+a.trip.u||0)>=(+b.trip.u||0)?a.trip:b.trip;o.updatedAt=Math.max(a.updatedAt,b.updatedAt);o.seedV=Math.max(a.seedV||0,b.seedV||0);return o}
 const stab=v=>JSON.stringify(v,(k,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.keys(x).sort().reduce((r,k2)=>(r[k2]=x[k2],r),{}):x);
@@ -453,7 +504,60 @@ const live=k=>Object.values(data[k]).filter(x=>x&&!x.del);
 const openCm=new Set();
 let filter='all', editId=null, editNote=null, aiBusy=false;
 const fmtD=ts=>new Date(ts).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-function render(){renderTrip();renderList();renderNotes();renderAI()}
+function render(){renderTrip();renderList();renderNotes();renderAI();renderDV()}
+/* ===== Заявки в лотерею Green Card (DV) =====
+   Хранятся в data.dv (localStorage + usa.json на Диске), как всё остальное.
+   В коде страницы личных данных нет: заявку вводят в приложении — вставкой текста
+   страницы подтверждения (разбирает dvParse) или вручную. Розыгрыш назван по году
+   выдачи виз, а подают заявку за два года до него. */
+const DVF=['prog','name','birth','conf','sent','from','to','sig','n'];
+let dvEdit=null;/* id изменяемой заявки или null — новая */
+const MON={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+function enDay(s){const m=String(s||'').match(/([A-Za-z]+)\s+(\d{1,2}),?\s*(\d{4})/),mo=m&&MON[m[1].toLowerCase()];
+  return mo?m[3]+'-'+String(mo).padStart(2,'0')+'-'+m[2].padStart(2,'0'):''}
+/* текст или HTML страницы «Submission Confirmation» → поля заявки */
+function dvParse(raw){const t=String(raw||'').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
+  const g=r=>{const m=t.match(r);return m?m[1].trim():''};
+  const y=g(/DV-(\d{4})/i)||g(/for the (\d{4}) Diversity/i);
+  const w=t.match(/between ([A-Za-z]+ \d{1,2},? ?\d{4}) and ([A-Za-z]+ \d{1,2},? ?\d{4})/i);
+  return {prog:y?'DV-'+y:'',name:g(/Entrant Name:\s*(.+?)\s*Confirmation Number/i),birth:g(/Year of Birth:\s*(\d{4})/i),
+    conf:g(/Confirmation Number:\s*([A-Z0-9]{10,20})/i).toUpperCase(),sent:g(/received on (.+?)\.\s*Please/i),
+    from:w?enDay(w[1]):'',to:w?enDay(w[2]):'',sig:g(/Digital Signature:\s*([0-9A-F]{16,})/i).toUpperCase()}}
+const fmtDay=s=>s?new Date(s+'T00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):'—';
+function dvState(x){if(!x.from&&!x.to)return['',''];const now=new Date();
+  if(x.from&&now<new Date(x.from+'T00:00'))return['','проверка откроется '+fmtDay(x.from)];
+  if(!x.to||now<=new Date(x.to+'T23:59'))return['live',x.to?'можно проверить до '+fmtDay(x.to):'можно проверить'];
+  return['','проверка закрыта']}
+function dvFill(v){for(const k of DVF)$('#dv_'+k).value=v&&v[k]!=null?v[k]:''}
+function renderDV(){
+  $('#dvFormH').textContent=dvEdit?'Изменить заявку':'Добавить заявку';
+  $('#dvCancel').hidden=!dvEdit;
+  const ds=live('dv').sort((a,b)=>String(b.prog||'').localeCompare(String(a.prog||''))||(b.u||0)-(a.u||0));
+  $('#dvList').innerHTML=ds.map(x=>{const [cls,st]=dvState(x);
+  return `<section class="card"><h2>${esc(x.prog||'Заявка DV')}<span class="sp"></span>${st?`<span class="badge ${cls}">${esc(st)}</span>`:''}<button class="ico" data-a="dv-ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="dv-rm" data-id="${x.id}" title="Удалить">✕</button></h2><dl class="kv">
+  <dt>Заявитель</dt><dd class="mono">${esc(x.name||'—')}${x.birth?' · '+esc(x.birth)+' г. р.':''}</dd>
+  <dt>Номер подтверждения</dt><dd><span class="mono" style="font-weight:650">${esc(x.conf)}</span> <button type="button" class="ico" data-a="copy" data-v="${esc(x.conf)}" title="Скопировать">⧉</button></dd>
+  ${x.sent?`<dt>Заявка подана</dt><dd>${esc(x.sent)}</dd>`:''}
+  ${x.from||x.to?`<dt>Срок проверки</dt><dd>${fmtDay(x.from)} — ${fmtDay(x.to)}</dd>`:''}
+  ${x.sig?`<dt>Цифровая подпись</dt><dd class="mono muted">${esc(x.sig)}</dd>`:''}
+  ${x.n?`<dt>Заметка</dt><dd class="muted" style="white-space:pre-wrap">${linkify(esc(x.n))}</dd>`:''}</dl></section>`}).join('')
+  ||'<section class="card"><p class="empty" style="margin:0">Заявок пока нет — вставьте текст страницы подтверждения выше.</p></section>'}
+function dvSave(){const v={};for(const k of DVF)v[k]=$('#dv_'+k).value.trim();v.conf=v.conf.toUpperCase();v.sig=v.sig.toUpperCase();
+  if(!v.conf){toast('Укажите номер подтверждения');$('#dv_conf').focus();return}
+  /* тот же номер уже есть — обновляем его, а не заводим второй */
+  const same=live('dv').find(x=>x.conf===v.conf&&x.id!==dvEdit);
+  const id=dvEdit||(same&&same.id)||uid();
+  const msg=same&&!dvEdit?'Такой номер уже был — заявка дополнена':'Заявка сохранена';
+  /* в уже существующую заявку (тот же номер, не через ✎) пишем только заполненные поля */
+  if(same&&!dvEdit)for(const k of DVF)if(!v[k])delete v[k];
+  data.dv[id]=Object.assign({},data.dv[id]||{},v,{id,u:Date.now()});delete data.dv[id].del;
+  dvEdit=null;dvFill(null);$('#dvPaste').value='';save();toast(msg)}
+$('#dvParse').onclick=()=>{const p=dvParse($('#dvPaste').value);
+  const got=DVF.filter(k=>p[k]);if(!got.length){toast('Не нашёл данных заявки — проверьте, что вставлен текст страницы подтверждения',5000);return}
+  const cur={};for(const k of DVF)cur[k]=$('#dv_'+k).value;dvFill(Object.assign(cur,Object.fromEntries(got.map(k=>[k,p[k]]))));
+  toast(p.conf?'Разобрал — проверьте поля и нажмите «Сохранить»':'Номер подтверждения не найден — впишите вручную',4000)};
+$('#dvSave').onclick=dvSave;
+$('#dvCancel').onclick=()=>{dvEdit=null;dvFill(null);renderDV()};
 function renderTrip(){const t=data.trip;
   [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>{const el=$(s);if(document.activeElement!==el)el.value=t[k]||''});
   const its=live('items'),done=its.filter(x=>x.done).length;
@@ -547,6 +651,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
     case'n-rm':if(confirm('Удалить заметку?'))touch('notes',id,{del:true});break;
     case'ai-rm':if(confirm('Удалить этот ответ?'))touch('ai',id,{del:true});break;
     case'set':e.preventDefault();luzOpenSettings();break;
+    case'dv-ed':dvEdit=id;dvFill(data.dv[id]);renderDV();$('#dvForm').scrollIntoView({behavior:'smooth',block:'start'});break;
+    case'dv-rm':if(confirm('Удалить заявку '+(data.dv[id].prog||'')+' '+data.dv[id].conf+'?')){if(dvEdit===id){dvEdit=null;dvFill(null)}touch('dv',id,{del:true})}break;
+    case'copy':{const v=b.dataset.v;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast('Скопировано: '+v),()=>toast('Не удалось скопировать — выделите номер вручную'));break}
   }});
 document.addEventListener('keydown',e=>{
   if(e.target.matches('[data-ed],[data-edn]')){if(e.key==='Enter'&&(e.target.matches('[data-ed]')||e.ctrlKey||e.metaKey)){e.preventDefault();finishEdit()}else if(e.key==='Escape'){editId=null;renderList()}}
@@ -558,8 +665,8 @@ $('#noteAdd').onclick=addNote;
 [['#tFrom','from'],['#tTo','to'],['#tDest','dest'],['#tWho','who']].forEach(([s,k])=>$(s).addEventListener('change',e=>{
   const v=e.target.value.trim();if(v===(data.trip[k]||''))return;data.trip[k]=v;data.trip.u=Date.now();save()}));
 $('#setBtn').onclick=luzOpenSettings;
-/* вкладки: запоминаем последнюю, адрес #list / #notes / #ai тоже работает */
-const TABS=['list','notes','ai'];
+/* вкладки: запоминаем последнюю, адрес #list / #notes / #ai / #dv тоже работает */
+const TABS=['list','notes','ai','dv'];
 function setTab(t,push){if(!TABS.includes(t))t='list';
   $$('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t?'true':'false'));
   $$('.pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===t));
