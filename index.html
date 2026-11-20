@@ -104,6 +104,8 @@ button{font:inherit;cursor:pointer}
 .mono{font-family:ui-monospace,Consolas,"Cascadia Mono",monospace;letter-spacing:.03em}
 .badge{font-size:11.5px;font-weight:650;border-radius:6px;padding:2px 8px;background:var(--seg);color:var(--ink-3);white-space:nowrap}
 .badge.live{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.card h2.dvh{flex-wrap:wrap;row-gap:4px}.dvh .dvt{white-space:nowrap}
+@media (max-width:640px){.dvh .badge{order:9;flex-basis:100%;max-width:fit-content}}
 .trip.dvf{grid-template-columns:repeat(2,minmax(0,1fr))}
 .trip.dvf .wide2{grid-column:1/-1}
 @media (max-width:640px){.trip.dvf{grid-template-columns:1fr}}
@@ -401,7 +403,7 @@ const DEFAULTS=[
  ['v03',S1,'Заполнить и отправить DS-160 — две отдельные анкеты','Где: https://ceac.state.gov/genniv\n1) Выбрать место подачи: KAZAKHSTAN, ASTANA.\n2) Сразу записать Application ID (начинается на «AA», вверху справа) и ответ на секретный вопрос — без них анкету не открыть. Сессия сбрасывается через ~20 минут бездействия: жмите Save.\n3) Заполнять на английском, латиницей точно как в паспорте. Отвечать честно — ответы сверяют на собеседовании.\n4) Анкету дочери заполняет родитель; в разделе о поездке указать, что она едет с вами.\n5) В конце Sign and Submit, затем распечатать страницу подтверждения со штрих-кодом (Confirmation) на каждого и сохранить PDF.\nКогда: можно сразу, до записи. Если потом поменялись данные — новая анкета и новый номер (в кабинете AIS номер DS-160 меняется только один раз). Перед собеседованием всё должно быть отправлено до 17:00 за 3 рабочих дня.'],
 
  ['v04',S2,'Создать кабинет AIS и добавить себя и дочь одной группой','Где: https://ais.usvisa-info.com/ru-kz/niv\n1) Зарегистрироваться на свою почту (страна — Казахстан, город — Астана).\n2) Создать группу и добавить двух заявителей: вас и дочь, у каждого — свой номер DS-160 и номер паспорта.\n3) Тип визы — B1/B2 (туризм/бизнес).\nОдна группа = одна оплата и один слот на двоих. Поддержка: Kazakhstan.Visas@gdit-gss.com.'],
- ['v05',S2,'Оплатить консульский сбор: $185 за каждого ($370 на двоих)','Сумма показывается в тенге, оплата — в кабинете AIS кнопкой Pay Visa Fee:\n• картой онлайн — сразу засчитывается. Российские карты не проходят; подойдёт любая иностранная карта (казахстанская, киргизская и т. п.), можно карта родственника или знакомого;\n• наличными в Народном банке (Halyk) Казахстана по квитанции из кабинета — засчитывается не сразу (до 2 рабочих дней).\nВажно: кнопка оплаты бывает недоступна, пока в календаре нет ни одной даты — тогда проверяйте позже.\nСрок сбора — 1 год (дата окончания — в кабинете: Продолжить → «Квитанция об оплате»). За этот год нужно ЗАПИСАТЬСЯ; само собеседование может быть позже — запись через 1,5–2 года остаётся в силе (сверено с FAQ и объявлениями ais.usvisa-info.com для Казахстана, 19.11.2026).\nПосле окончания срока: перенос или отмена записи — только с новым сбором; пропуск собеседования — тоже новый сбор. Сбор не возвращается и не передаётся.\nПоэтому платить, только когда готовы сразу взять дату (DS-160 отправлены, группа собрана).'],
+ ['v05',S2,'Оплатить консульский сбор: $185 за каждого ($370 на двоих)','Сумма показывается в тенге, оплата — в кабинете AIS кнопкой Pay Visa Fee:\n• картой онлайн — сразу засчитывается. Российские карты не проходят; подойдёт любая иностранная карта (казахстанская, киргизская и т. п.), можно карта родственника или знакомого;\n• наличными в Народном банке (Halyk) Казахстана по квитанции из кабинета — засчитывается не сразу (до 2 рабочих дней).\nПо отзывам заявителей (официально не подтверждено), кнопка оплаты бывает недоступна, пока в календаре нет ни одной даты — тогда проверяйте позже.\nСрок сбора — 1 год (дата окончания — в кабинете: Продолжить → «Квитанция об оплате»). За этот год нужно ЗАПИСАТЬСЯ; само собеседование может быть позже — запись через 1,5–2 года остаётся в силе (сверено с FAQ и объявлениями ais.usvisa-info.com для Казахстана, 19.11.2026).\nПосле окончания срока: перенос или отмена записи — только с новым сбором; пропуск собеседования — тоже новый сбор. Сбор не возвращается и не передаётся.\nПоэтому платить, только когда готовы сразу взять дату (DS-160 отправлены, группа собрана).'],
  ['v06',S2,'Записаться на собеседование — один слот на двоих','В кабинете AIS → Schedule Appointment. Открытые даты в Астане — примерно через 1,5–2 года (основная запись — 2028 г.).\nЧто делать: сразу после оплаты взять любую доступную дату — записаться нужно, пока действует сбор (1 год). Затем регулярно (утром и вечером) проверять календарь — даты освобождаются из-за отмен — и переносить запись на более раннюю. Число переносов ограничено, не тратьте их зря.\nВажно: переносить бесплатно можно только до даты окончания сбора (в квитанции). После неё перенос или отмена — только с новым сбором $185 с человека, поэтому после этой даты держите запись и приходите в назначенный день. Ловить ранние даты имеет смысл в первый год после оплаты.\nПосле записи распечатать Appointment Confirmation.'],
  ['v24',S2,'Выбрать в кабинете, как получить паспорта после визы','Курьерская доставка в пункт выдачи в Астане или в другой город Казахстана — входит в консульский сбор. Выбирайте пункт там, где будете ждать паспорта.'],
  ['v07',S2,'Учесть, что дочь идёт на собеседование лично','С 2 сентября 2025 г. освобождение для детей до 14 лет отменено — ребёнок приходит вместе с родителем в одно время (поэтому группа и один слот).'],
@@ -433,7 +435,7 @@ const DEFAULTS=[
  ['d05','Документы','Копии паспортов, виз, страховки — в облаке и на бумаге',''],
  ['d06','Документы','Распечатки: обратные билеты, брони жилья, адрес первой ночёвки','Могут спросить на границе.'],
  ['d07','Деньги','Банковская карта, которая работает в США, + запасная','Российские карты в США не работают — нужна карта зарубежного банка.'],
- ['d08','Деньги','Наличные доллары на первые дни','Чаевые, мелкие расходы; от $10 000 на семью — декларировать.'],
+ ['d08','Деньги','Наличные доллары на первые дни','Чаевые, мелкие расходы. Если у семьи вместе больше $10 000 — задекларировать на въезде (это не запрет, а обязательная декларация).'],
  ['d09','Деньги','Проверить лимиты карт',''],
  ['d10','Деньги','Прикинуть бюджет: жильё, транспорт, еда, чаевые 15–20%, налог с продаж',''],
  ['d11','Бронирования','Авиабилеты туда и обратно','Прямых рейсов из России нет — маршрут через третьи страны (Стамбул, Дубай, Ереван и др.). Для транзита проверить, нужна ли транзитная виза.'],
@@ -470,7 +472,7 @@ const SUMMARY_NOTE='Сводка по визе для жителей Росси�
  '• Ожидание в Астане: открытые даты — около 1,5–2 лет вперёд (2028 г.), раньше — только отмены.\n'+
  '• Казахстан: разрешение QazETA — обязательно с 01.07.2027, бесплатно, за 72 часа до въезда.\n'+
  '• Паспорт: Россия в списке исключений CBP из правила «+6 месяцев», но запас лучше иметь.';
-const SEED_V=6;
+const SEED_V=7;
 const emptyData=()=>({items:{},notes:{},ai:{},dv:{},trip:{from:'',to:'',dest:'',who:'',u:0},updatedAt:0,seedV:0});
 /* Стартовые пункты с постоянными id и u:0. Нетронутые (u===0) пункты и заметка-сводка
    обновляются до текущей версии одинаково на всех устройствах; тронутые — не трогаем. */
@@ -535,7 +537,7 @@ function renderDV(){
   $('#dvCancel').hidden=!dvEdit;
   const ds=live('dv').sort((a,b)=>String(b.prog||'').localeCompare(String(a.prog||''))||(b.u||0)-(a.u||0));
   $('#dvList').innerHTML=ds.map(x=>{const [cls,st]=dvState(x);
-  return `<section class="card"><h2>${esc(x.prog||'Заявка DV')}<span class="sp"></span>${st?`<span class="badge ${cls}">${esc(st)}</span>`:''}<button class="ico" data-a="dv-ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="dv-rm" data-id="${x.id}" title="Удалить">✕</button></h2><dl class="kv">
+  return `<section class="card"><h2 class="dvh"><span class="dvt">${esc(x.prog||'Заявка DV')}</span>${st?`<span class="badge ${cls}">${esc(st)}</span>`:''}<span class="sp"></span><button class="ico" data-a="dv-ed" data-id="${esc(x.id)}" title="Изменить">✎</button><button class="ico del" data-a="dv-rm" data-id="${esc(x.id)}" title="Удалить">✕</button></h2><dl class="kv">
   <dt>Заявитель</dt><dd class="mono">${esc(x.name||'—')}${x.birth?' · '+esc(x.birth)+' г. р.':''}</dd>
   <dt>Номер подтверждения</dt><dd><span class="mono" style="font-weight:650">${esc(x.conf)}</span> <button type="button" class="ico" data-a="copy" data-v="${esc(x.conf)}" title="Скопировать">⧉</button></dd>
   ${x.sent?`<dt>Заявка подана</dt><dd>${esc(x.sent)}</dd>`:''}
@@ -547,6 +549,7 @@ function dvSave(){const v={};for(const k of DVF)v[k]=$('#dv_'+k).value.trim();v.
   if(!v.conf){toast('Укажите номер подтверждения');$('#dv_conf').focus();return}
   /* тот же номер уже есть — обновляем его, а не заводим второй */
   const same=live('dv').find(x=>x.conf===v.conf&&x.id!==dvEdit);
+  if(same&&dvEdit){toast('Заявка с таким номером уже есть ('+(same.prog||'DV')+') — номер не изменён',5000);$('#dv_conf').focus();return}
   const id=dvEdit||(same&&same.id)||uid();
   const msg=same&&!dvEdit?'Такой номер уже был — заявка дополнена':'Заявка сохранена';
   /* в уже существующую заявку (тот же номер, не через ✎) пишем только заполненные поля */
@@ -603,7 +606,8 @@ function renderNotes(){
   const ta=$('[data-ned]');if(ta&&document.activeElement!==ta&&!ta.dataset.f){ta.dataset.f=1;ta.focus()}
   $('#tbNotes').textContent=live('notes').length||'';
 }
-const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+/* ссылка без хвостовой точки, запятой, скобки — они остаются текстом */
+const linkify=s=>s.replace(/https?:\/\/[^\s<]+/g,m=>{const u=m.replace(/(?:[.,;:!?)»]|&quot;|&#39;)+$/,'');return `<a href="${u}" target="_blank" rel="noopener">${u}</a>`+m.slice(u.length)});
 function renderAI(){const c=aiCfg(),st=$('#aiStatus');
   if(!c.key){st.className='aist warn';st.innerHTML=`Нет ключа ${c.name}. <a href="#" data-a="set">Открыть общие настройки</a> — там же, где для Бюджета, Дневника и Медкарты.`}
   else{st.className='aist';st.innerHTML=`Отвечает <b>${c.name}</b> · ${esc(c.model)}. <a href="#" data-a="set">Сменить</a>`}
@@ -633,6 +637,7 @@ $('#addForm').onsubmit=e=>{e.preventDefault();const t=$('#addText').value.trim()
 $$('#flt button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderList()});
 function touch(k,id,p){const x=data[k][id];if(!x)return;Object.assign(x,p,{u:Date.now()});save()}
 function finishEdit(){const ed=$('[data-ed]');if(!ed)return;const id=ed.dataset.ed,v=ed.value.trim(),n=$('[data-edn]').value.trim(),x=data.items[id];editId=null;
+  if(!x||x.del){renderList();toast('Пункт удалён на другом устройстве');return}
   if(v&&(v!==x.t||n!==(x.n||'')))touch('items',id,{t:v,n,ed:1});else renderList()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
   switch(a){
@@ -654,7 +659,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
     case'set':e.preventDefault();luzOpenSettings();break;
     case'dv-ed':dvEdit=id;dvFill(data.dv[id]);renderDV();$('#dvForm').scrollIntoView({behavior:'smooth',block:'start'});break;
     case'dv-rm':if(confirm('Удалить заявку '+(data.dv[id].prog||'')+' '+data.dv[id].conf+'?')){if(dvEdit===id){dvEdit=null;dvFill(null)}touch('dv',id,{del:true})}break;
-    case'copy':{const v=b.dataset.v;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast('Скопировано: '+v),()=>toast('Не удалось скопировать — выделите номер вручную'));break}
+    case'copy':{const v=b.dataset.v;(navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).catch(()=>{
+        const ta=document.createElement('textarea');ta.value=v;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();
+        const ok=document.execCommand('copy');ta.remove();if(!ok)throw new Error('copy')}).then(()=>toast('Скопировано: '+v),()=>toast('Не удалось скопировать — выделите номер вручную'));break}
   }});
 document.addEventListener('keydown',e=>{
   if(e.target.matches('[data-ed],[data-edn]')){if(e.key==='Enter'&&(e.target.matches('[data-ed]')||e.ctrlKey||e.metaKey)){e.preventDefault();finishEdit()}else if(e.key==='Escape'){editId=null;renderList()}}
@@ -685,7 +692,7 @@ function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o
   const ns=live('notes').sort((a,b)=>(a.at||0)-(b.at||0));
   s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+(AUTHORS[n.by]?AUTHORS[n.by]+': ':'')+n.t).join('\n'):'нет');return s}
 const SYSTEM='Ты опытный помощник по подготовке к поездке в США для жителей России — граждан РФ, живущих в России (виза B1/B2 через посольство США в Астане). Отвечай по-русски, конкретно и по делу, без воды. '+
-  'Учитывай даты: сколько осталось до вылета и что требует времени (виза, ESTA, паспорт, страховка, брони). '+
+  'Учитывай даты: сколько осталось до вылета и что требует времени (виза, паспорт, страховка, брони). ESTA гражданам РФ недоступна — только виза.'+
   'Если чего-то не знаешь о гражданстве или ситуации человека — так и скажи и укажи, что уточнить, а не выдумывай. '+
   'Визовые правила и сборы часто меняются — помечай, что стоит перепроверить на сайте посольства (kz.usembassy.gov) или travel.state.gov. '+
   'Формат: короткие заголовки (##) и списки.';
