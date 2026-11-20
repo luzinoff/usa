@@ -82,6 +82,23 @@ button{font:inherit;cursor:pointer}
 .it .edw input{padding:5px 8px}.it .edw textarea{min-height:64px;font-size:14px}
 .add{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
 .add>input{width:100%}
+/* сроки: у пункта x.due (ГГГГ-ММ-ДД), блок «Ближайшие сроки» над чек-листом */
+.due{display:inline-block;font-size:11.5px;font-weight:650;border-radius:6px;padding:1px 7px;margin-left:6px;background:var(--seg);color:var(--ink-3);white-space:nowrap;vertical-align:1px}
+.due.soon{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.due.over{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.it.done .due{display:none}
+.dues{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.dues h3{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-3);margin:0 0 6px}
+.dues ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.dues li{display:flex;gap:10px;align-items:baseline;font-size:14px}
+.dues li .n{flex:none;min-width:86px;font-weight:650;font-variant-numeric:tabular-nums}
+.dues li .n.soon{color:var(--warn)}.dues li .n.over{color:var(--bad)}
+.dues li .w{flex:1;min-width:0;word-break:break-word}
+.dues li .w small{color:var(--ink-3);margin-left:4px}
+.dues .more{font-size:12.5px;color:var(--acc);cursor:pointer;margin-top:4px}
+.edd{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
+.edd input{flex:none;width:auto}
+.add .row input[type=date]{flex:none;width:auto}
 /* заметки */
 .note{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px}
 .note .tx{white-space:pre-wrap;word-break:break-word}
@@ -165,6 +182,7 @@ button{font:inherit;cursor:pointer}
     <div><div class="big" id="sDone">0 / 0</div><div class="muted">задач готово</div></div>
     <div class="prog"><i id="sBar" style="width:0"></i></div>
   </div>
+  <div class="dues" id="dues" hidden></div>
 </section>
 
 <section class="card" id="listCard">
@@ -173,7 +191,7 @@ button{font:inherit;cursor:pointer}
   <div id="list"></div>
   <form class="add" id="addForm" autocomplete="off">
     <input type="text" id="addText" placeholder="Новая задача…" maxlength="300">
-    <div class="row"><select id="addCat" class="grow"></select><button class="btn pri" type="submit">Добавить</button></div>
+    <div class="row"><select id="addCat" class="grow"></select><input type="date" id="addDue" title="Срок — к какому числу сделать (необязательно)" aria-label="Срок"><button class="btn pri" type="submit">Добавить</button></div>
   </form>
 </section>
 </div>
@@ -573,8 +591,39 @@ function renderTrip(){const t=data.trip;
     else if(n===0){dl.textContent='Сегодня';dll.textContent='вылет!'}
     else if(back!==null&&back>=0){dl.textContent='В поездке';dll.textContent=back?'ещё '+back+' '+pl(back,'день','дня','дней'):'сегодня обратно'}
     else{dl.textContent='Позади';dll.textContent='поездка прошла'}}
-  else{dl.textContent='—';dll.textContent='укажите дату вылета'}}
+  else{dl.textContent='—';dll.textContent='укажите дату вылета'}
+  renderDues()}
 const pl=(n,a,b,c)=>{n=Math.abs(n)%100;const m=n%10;return n>10&&n<20?c:m===1?a:m>1&&m<5?b:c};
+/* ===== Сроки =====
+   У пункта необязательный x.due (ГГГГ-ММ-ДД): задаётся при добавлении и в ✎.
+   daysTo() считает по календарным дням местного времени, поэтому «сегодня»
+   не съезжает к вечеру. Блок «Ближайшие сроки» — несделанные пункты со сроком,
+   окна проверки DV и сам вылет, по возрастанию даты. */
+const isDay=s=>/^\d{4}-\d{2}-\d{2}$/.test(String(s||''));
+function daysTo(s){const d=new Date(s+'T00:00'),now=new Date();now.setHours(0,0,0,0);return Math.round((d-now)/864e5)}
+const fmtShort=s=>new Date(s+'T00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+function dueInfo(s){if(!isDay(s))return null;const n=daysTo(s);
+  if(n<0)return{n,cls:'over',txt:'просрочено '+(-n)+' '+pl(n,'день','дня','дней')};
+  if(n===0)return{n,cls:'soon',txt:'сегодня'};
+  if(n===1)return{n,cls:'soon',txt:'завтра'};
+  if(n<=7)return{n,cls:'soon',txt:'через '+n+' '+pl(n,'день','дня','дней')};
+  return{n,cls:'',txt:'до '+fmtShort(s)}}
+function dueBadge(x){const i=dueInfo(x.due);if(!i)return'';
+  const late=isDay(data.trip.from)&&x.due>data.trip.from&&!x.done;
+  return `<span class="due ${i.cls}" title="Срок: ${fmtDay(x.due)}${late?' — позже даты вылета!':''}">${i.txt}${late?' ⚠':''}</span>`}
+let duesAll=false;
+function renderDues(){const box=$('#dues'),t=data.trip,ev=[];
+  for(const x of live('items'))if(!x.done&&isDay(x.due))ev.push({d:x.due,w:x.t,sub:x.c||'',late:isDay(t.from)&&x.due>t.from});
+  for(const x of live('dv')){
+    if(isDay(x.from)&&daysTo(x.from)>=0)ev.push({d:x.from,w:'Открывается проверка '+(x.prog||'DV'),sub:'Грин-карта'});
+    else if(isDay(x.to)&&daysTo(x.to)>=0)ev.push({d:x.to,w:'Последний день проверки '+(x.prog||'DV'),sub:'Грин-карта'})}
+  if(isDay(t.from)&&daysTo(t.from)>=0)ev.push({d:t.from,w:'Вылет',sub:t.dest||''});
+  ev.sort((a,b)=>a.d.localeCompare(b.d));
+  box.hidden=!ev.length;if(!ev.length){box.innerHTML='';return}
+  const over=ev.filter(e=>daysTo(e.d)<0).length,lim=duesAll?ev.length:Math.max(5,over);
+  box.innerHTML=`<h3>Ближайшие сроки</h3><ul>${ev.slice(0,lim).map(e=>{const i=dueInfo(e.d);
+    return `<li><span class="n ${i.cls}">${i.n===0?'сегодня':i.n<0?'−'+(-i.n)+' дн.':i.n+' '+pl(i.n,'день','дня','дней')}</span><span class="w">${esc(e.w)}<small>${esc(fmtShort(e.d))}${e.sub?' · '+esc(e.sub):''}${e.late?' · позже вылета ⚠':''}</small></span></li>`}).join('')}</ul>`+
+    (ev.length>lim||duesAll&&ev.length>5?`<div class="more" data-a="dues">${duesAll?'свернуть':'ещё '+(ev.length-lim)}</div>`:'')}
 function renderList(){
   $$('#flt button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===filter?'true':'false'));
   const its=live('items').sort((a,b)=>(a.o??0)-(b.o??0)||(a.u||0)-(b.u||0));
@@ -584,8 +633,8 @@ function renderList(){
     const vis=all.filter(x=>filter==='all'||(filter==='done'?x.done:!x.done));if(!vis.length)continue;
     h+=`<div class="cat"><h3>${esc(c)} <span>${all.filter(x=>x.done).length}/${all.length}</span></h3>`;
     for(const x of vis){
-      if(editId===x.id){h+=`<div class="it"><input type="checkbox" ${x.done?'checked':''} disabled><div class="edw"><input data-ed="${x.id}" value="${esc(x.t)}" maxlength="300" placeholder="Задача"><textarea data-edn placeholder="Комментарий: где, сколько стоит, на что обратить внимание">${esc(x.n||'')}</textarea><div class="row"><span class="grow"></span><button class="btn" data-a="ed-no">Отмена</button><button class="btn pri" data-a="ed-ok">Сохранить</button></div></div></div>`;continue}
-      h+=`<div class="it${x.done?' done':''}"><input type="checkbox" data-a="tg" data-id="${x.id}" ${x.done?'checked':''} aria-label="Готово"><div class="body"><span class="tx" data-a="tg" data-id="${x.id}">${esc(x.t)}</span>${x.n?`<div class="cm${openCm.has(x.id)?' open':''}" data-a="cmx" data-id="${x.id}">${linkify(esc(x.n))}</div>${x.n.length>140||x.n.includes('\n')?`<div class="more" data-a="cmx" data-id="${x.id}">${openCm.has(x.id)?'свернуть':'подробнее'}</div>`:''}`:''}</div><div class="acts"><button class="ico" data-a="ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="rm" data-id="${x.id}" title="Удалить">✕</button></div></div>`}
+      if(editId===x.id){h+=`<div class="it"><input type="checkbox" ${x.done?'checked':''} disabled><div class="edw"><input data-ed="${x.id}" value="${esc(x.t)}" maxlength="300" placeholder="Задача"><textarea data-edn placeholder="Комментарий: где, сколько стоит, на что обратить внимание">${esc(x.n||'')}</textarea><label class="edd">Срок <input type="date" data-edd value="${isDay(x.due)?x.due:''}"></label><div class="row"><span class="grow"></span><button class="btn" data-a="ed-no">Отмена</button><button class="btn pri" data-a="ed-ok">Сохранить</button></div></div></div>`;continue}
+      h+=`<div class="it${x.done?' done':''}"><input type="checkbox" data-a="tg" data-id="${x.id}" ${x.done?'checked':''} aria-label="Готово"><div class="body"><span class="tx" data-a="tg" data-id="${x.id}">${esc(x.t)}</span>${dueBadge(x)}${x.n?`<div class="cm${openCm.has(x.id)?' open':''}" data-a="cmx" data-id="${x.id}">${linkify(esc(x.n))}</div>${x.n.length>140||x.n.includes('\n')?`<div class="more" data-a="cmx" data-id="${x.id}">${openCm.has(x.id)?'свернуть':'подробнее'}</div>`:''}`:''}</div><div class="acts"><button class="ico" data-a="ed" data-id="${x.id}" title="Изменить">✎</button><button class="ico del" data-a="rm" data-id="${x.id}" title="Удалить">✕</button></div></div>`}
     h+='</div>'}
   $('#list').innerHTML=h||`<p class="empty">${filter==='done'?'Пока ничего не отмечено.':filter==='left'?'Всё готово 🎉':'Список пуст — добавьте первую задачу.'}</p>`;
   const ed=$('[data-ed]');if(ed){ed.focus();ed.setSelectionRange(ed.value.length,ed.value.length)}}
@@ -633,12 +682,18 @@ applyCm();
 $('#addCat').innerHTML=CATS.map(c=>`<option>${esc(c)}</option>`).join('');
 $('#addForm').onsubmit=e=>{e.preventDefault();const t=$('#addText').value.trim();if(!t)return;
   const c=$('#addCat').value,o=Math.max(0,...Object.values(data.items).map(x=>x.o||0))+1,id=uid();
-  data.items[id]={id,t,c,done:false,o,u:Date.now()};$('#addText').value='';if(filter==='done')filter='all';save();$('#addText').focus()};
+  const due=$('#addDue').value;data.items[id]={id,t,c,done:false,o,u:Date.now()};if(isDay(due))data.items[id].due=due;
+  $('#addText').value='';$('#addDue').value='';if(filter==='done')filter='all';save();$('#addText').focus()};
 $$('#flt button').forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderList()});
 function touch(k,id,p){const x=data[k][id];if(!x)return;Object.assign(x,p,{u:Date.now()});save()}
 function finishEdit(){const ed=$('[data-ed]');if(!ed)return;const id=ed.dataset.ed,v=ed.value.trim(),n=$('[data-edn]').value.trim(),x=data.items[id];editId=null;
+  const dd=$('[data-edd]'),due=dd&&isDay(dd.value)?dd.value:'';
   if(!x||x.del){renderList();toast('Пункт удалён на другом устройстве');return}
-  if(v&&(v!==x.t||n!==(x.n||'')))touch('items',id,{t:v,n,ed:1});else renderList()}
+  if(!v){renderList();return}
+  const p={};if(v!==x.t||n!==(x.n||''))Object.assign(p,{t:v,n,ed:1});
+  /* срок не трогает признак ed: стартовый пункт с одним только сроком по-прежнему обновляется из SEED */
+  if(due!==(x.due||''))p.due=due;
+  if(Object.keys(p).length)touch('items',id,p);else renderList()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,id=b.dataset.id;
   switch(a){
     case'tg':if(b.tagName==='SPAN'||b.type==='checkbox'){touch('items',id,{done:!data.items[id].done})}break;
@@ -646,6 +701,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
     case'ed-ok':finishEdit();break;
     case'cmx':if(e.target.closest('a'))break;openCm.has(id)?openCm.delete(id):openCm.add(id);renderList();break;
     case'ed-no':editId=null;renderList();break;
+    case'dues':duesAll=!duesAll;renderDues();break;
     case'cm':showCm=!showCm;try{localStorage.setItem('usa.showCm',showCm?'1':'0')}catch(er){}applyCm();break;
     case'rm':if(confirm('Удалить «'+data.items[id].t+'»?'))touch('items',id,{del:true});break;
     case'n-ed':editNote=id;editBy=data.notes[id].by||'';renderNotes();break;
@@ -688,7 +744,7 @@ function context(){const t=data.trip,its=live('items').sort((a,b)=>(a.o??0)-(b.o
   const today=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
   let s=`Сегодня: ${today}.\nПоездка в США. Вылет: ${t.from||'не указан'}. Возвращение: ${t.to||'не указано'}. Кто едет: ${t.who||'не указано'}. Куда и зачем: ${t.dest||'не указано'}.\n\nЧЕК-ЛИСТ (✔ — сделано, ☐ — не сделано):\n`;
   const cats=[...new Set(its.map(x=>x.c||'Другое'))];
-  for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t+(x.n?' — '+x.n.replace(/\s*\n\s*/g,' '):'')).join('\n')+'\n'}
+  for(const c of cats){s+=`\n${c}:\n`+its.filter(x=>(x.c||'Другое')===c).map(x=>(x.done?'✔ ':'☐ ')+x.t+(!x.done&&isDay(x.due)?' [срок: '+x.due+']':'')+(x.n?' — '+x.n.replace(/\s*\n\s*/g,' '):'')).join('\n')+'\n'}
   const ns=live('notes').sort((a,b)=>(a.at||0)-(b.at||0));
   s+='\nЗАМЕТКИ:\n'+(ns.length?ns.map(n=>'— '+(AUTHORS[n.by]?AUTHORS[n.by]+': ':'')+n.t).join('\n'):'нет');return s}
 const SYSTEM='Ты опытный помощник по подготовке к поездке в США для жителей России — граждан РФ, живущих в России (виза B1/B2 через посольство США в Астане). Отвечай по-русски, конкретно и по делу, без воды. '+
